@@ -1,8 +1,28 @@
 import sys
+from typing import Callable
 
 from PyQt6 import QtGui
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QHBoxLayout, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QHBoxLayout, QVBoxLayout, QWidget, QPushButton, QLineEdit
+
+
+class ScoreWidget(QWidget):
+    def __init__(self, func: Callable[[int], None]):
+        super().__init__()
+        main_container = QHBoxLayout()
+
+        minus_button = QPushButton("-")
+        text_area = QLineEdit()
+        minus_button.clicked.connect(lambda: func(-int(text_area.text())))
+        main_container.addWidget(minus_button)
+
+        main_container.addWidget(text_area)
+
+        plus_button = QPushButton("+")
+        plus_button.clicked.connect(lambda: func(int(text_area.text())))
+        main_container.addWidget(plus_button)
+
+        self.setLayout(main_container)
 
 
 class GamerButton(QWidget):
@@ -10,11 +30,30 @@ class GamerButton(QWidget):
         super().__init__()
         main_container = QVBoxLayout()
 
-        gamer_name_label = QLabel(name)
-        main_container.addWidget(gamer_name_label)
+        name_label = QLabel(name)
+        main_container.addWidget(name_label)
 
         self.setLayout(main_container)
         self.setMaximumHeight(200)
+
+        self.__score = 0
+        self.__score_label = QLabel(str(self.__score))
+        main_container.addWidget(self.__score_label)
+
+        score_widget = ScoreWidget(self.update_score)
+        main_container.addWidget(score_widget)
+
+    def update_score(self, value: int):
+        self.score += value
+
+    @property
+    def score(self) -> int:
+        return self.__score
+
+    @score.setter
+    def score(self, value: int):
+        self.__score = value
+        self.__score_label.setText(str(self.__score))
 
 
 class MainWindow(QMainWindow):
