@@ -3,7 +3,11 @@ from typing import Callable
 
 from PyQt6 import QtGui
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIntValidator
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QHBoxLayout, QVBoxLayout, QWidget, QPushButton, QLineEdit
+import pygame
+
+from joystick_controller import JoystickController, JoystickDownEvent
 
 
 class ScoreWidget(QWidget):
@@ -11,18 +15,26 @@ class ScoreWidget(QWidget):
         super().__init__()
         main_container = QHBoxLayout()
 
-        minus_button = QPushButton("-")
-        text_area = QLineEdit()
-        minus_button.clicked.connect(lambda: func(-int(text_area.text())))
-        main_container.addWidget(minus_button)
+        self.__text_area = QLineEdit()
+        number_validator = QIntValidator()
+        self.__text_area.setValidator(number_validator)
+        self.__text_area.setPlaceholderText("0")
 
-        main_container.addWidget(text_area)
+        minus_button = QPushButton("-")
+        minus_button.clicked.connect(lambda: func(-self.get_text_as_number()))
 
         plus_button = QPushButton("+")
-        plus_button.clicked.connect(lambda: func(int(text_area.text())))
+        plus_button.clicked.connect(lambda: func(self.get_text_as_number()))
+
+        main_container.addWidget(minus_button)
+        main_container.addWidget(self.__text_area)
         main_container.addWidget(plus_button)
 
         self.setLayout(main_container)
+
+    def get_text_as_number(self) -> int:
+        text_value = self.__text_area.text().strip()
+        return 0 if text_value == "" else int(text_value)
 
 
 class GamerButton(QWidget):
@@ -64,10 +76,10 @@ class MainWindow(QMainWindow):
         main_widget = QWidget()
 
         main_container = QVBoxLayout()
-        gamer_name_label = QLabel("Hello")
-        gamer_name_label.setStyleSheet("background-color: #000000; color: #FFFFFF;")
+        self.__gamer_name = QLabel("Hello")
+        self.__gamer_name.setStyleSheet("background-color: #000000; color: #FFFFFF;")
 
-        main_container.addWidget(gamer_name_label)
+        main_container.addWidget(self.__gamer_name)
 
         gamers_container = QHBoxLayout()
         gamer1 = GamerButton("gamer1")
@@ -81,9 +93,17 @@ class MainWindow(QMainWindow):
         main_widget.setLayout(main_container)
         self.setCentralWidget(main_widget)
 
+        joystick_controller = JoystickController(self.key_joystick_event)
+        joystick_controller.start()
+
     def keyPressEvent(self, key_event: QtGui.QKeyEvent) -> None:
+        self.__gamer_name.setText(str(key_event.key()))
+
         if key_event.key() == Qt.Key.Key_Escape:
             self.close()
+
+    def key_joystick_event(self, key: JoystickDownEvent) -> None:
+        self.__gamer_name.setText(str(key))
 
 
 app = QApplication(sys.argv)
