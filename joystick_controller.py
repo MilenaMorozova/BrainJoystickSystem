@@ -1,14 +1,16 @@
+from dataclasses import dataclass
 from threading import Thread
 from typing import Callable
 
 import pygame
-from PyQt6.QtCore import QThread
+
+from joystick_button_enum import JoystickButton
 
 
+@dataclass
 class JoystickDownEvent:
-    def __init__(self, joystick_id: int, button_id: int):
-        self.button_id = button_id
-        self.joystick_id = joystick_id
+    button_id: JoystickButton
+    joystick_id: int
 
     def __str__(self):
         return f"button_id: {self.button_id}, joystick_id: {self.joystick_id}"
@@ -25,8 +27,11 @@ class JoystickController:
         while True:
             events = pygame.event.get()
             for event in events:
-                if event.type == pygame.JOYBUTTONDOWN:
-                    joystick_down_event = JoystickDownEvent(event.joy, event.button)
+                if event.type == pygame.JOYBUTTONDOWN and event.button in list(JoystickButton):
+                    joystick_down_event = JoystickDownEvent(
+                        button_id=JoystickButton(event.button),
+                        joystick_id=event.joy
+                    )
                     self.on_button_press(joystick_down_event)
 
     def start(self):

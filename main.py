@@ -1,80 +1,24 @@
 import sys
-from typing import Callable, List
+from typing import List
 
 from PyQt6 import QtGui
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QIntValidator
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QHBoxLayout, QVBoxLayout, QWidget, QPushButton, QLineEdit
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QHBoxLayout, QVBoxLayout, QWidget
 
 from joystick_button_enum import JoystickButton
 from player import Player
 from joystick_controller import JoystickController, JoystickDownEvent
-
-
-class ScoreWidget(QWidget):
-    def __init__(self, func: Callable[[int], None]):
-        super().__init__()
-        main_container = QHBoxLayout()
-
-        self.__text_area = QLineEdit()
-        number_validator = QIntValidator()
-        self.__text_area.setValidator(number_validator)
-        self.__text_area.setPlaceholderText("0")
-
-        minus_button = QPushButton("-")
-        minus_button.clicked.connect(lambda: func(-self.get_text_as_number()))
-
-        plus_button = QPushButton("+")
-        plus_button.clicked.connect(lambda: func(self.get_text_as_number()))
-
-        main_container.addWidget(minus_button)
-        main_container.addWidget(self.__text_area)
-        main_container.addWidget(plus_button)
-
-        self.setLayout(main_container)
-
-    def get_text_as_number(self) -> int:
-        text_value = self.__text_area.text().strip()
-        return 0 if text_value == "" else int(text_value)
-
-
-class PlayerWidget(QWidget):
-    def __init__(self, player: Player):
-        super().__init__()
-        main_container = QVBoxLayout()
-
-        name_label = QLabel(player.name)
-        main_container.addWidget(name_label)
-
-        self.setLayout(main_container)
-        self.setMaximumHeight(200)
-
-        self.__score = 0
-        self.__score_label = QLabel(str(self.__score))
-        main_container.addWidget(self.__score_label)
-
-        score_widget = ScoreWidget(self.update_score)
-        main_container.addWidget(score_widget)
-
-    def update_score(self, value: int):
-        self.score += value
-
-    @property
-    def score(self) -> int:
-        return self.__score
-
-    @score.setter
-    def score(self, value: int):
-        self.__score = value
-        self.__score_label.setText(str(self.__score))
+from widgets.player_widget import PlayerWidget
 
 
 class MainWindow(QMainWindow):
-    on_new_player = pyqtSignal(Player)
+    on_add_player = pyqtSignal(Player)
+    on_remove_player = pyqtSignal(Player)
 
     def __init__(self):
         super().__init__()
-        self.on_new_player.connect(self.__add_player)
+        self.on_add_player.connect(self.__add_player)
+        self.on_remove_player.connect(self.__remove_player)
 
         self.setWindowTitle("My App")
         main_widget = QWidget()
@@ -104,15 +48,27 @@ class MainWindow(QMainWindow):
 
     def key_joystick_event(self, key: JoystickDownEvent) -> None:
         # start button - connect joystick
-        if key.button_id == JoystickButton.START \
-                and key.joystick_id not in [i.joystick_id for i in self.__players]:
-            new_player = Player("name", key.joystick_id)
-            self.on_new_player.emit(new_player)
+        match key.button_id:
+            case JoystickButton.START:
+                if key.joystick_id not in [i.joystick_id for i in self.__players]:
+                    new_player = Player("name", key.joystick_id)
+                    self.on_add_player.emit(new_player)
+            case JoystickButton.BACK:
+                if key.joystick_id in [i.joystick_id for i in self.__players]:
+                    player = [i for i in self.__players if i.joystick_id == key.joystick_id][0]
+                    self.on_remove_player.emit(player)
+            case _:
+                raise ValueError(f"Unexpected value ({key.button_id})")
 
     def __add_player(self, player: Player):
         self.__players.append(player)
         player_widget = PlayerWidget(player)
-        self.players_container.addWidget(QLabel("new player"))
+        self.players_container.addWidget(player_widget)
+
+    def __remove_player(self, player: Player):
+        index = self.__players.index(player)
+        self.__players.remove(player)
+        self.players_container.itemAt(index).widget().deleteLater()
 
 
 app = QApplication(sys.argv)
