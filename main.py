@@ -3,11 +3,12 @@ from typing import List
 
 from PyQt6 import QtGui
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QHBoxLayout, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout, QWidget
 
 from joystick_button_enum import JoystickButton
 from player import Player
 from joystick_controller import JoystickController, JoystickDownEvent
+from widgets.active_player_widget import ActivePlayerWidget
 from widgets.player_widget import PlayerWidget
 
 
@@ -24,10 +25,9 @@ class MainWindow(QMainWindow):
         main_widget = QWidget()
 
         main_container = QVBoxLayout()
-        self.__player_name = QLabel("Hello")
-        self.__player_name.setStyleSheet("background-color: #000000; color: #FFFFFF;")
+        self.__active_player_widget = ActivePlayerWidget()
 
-        main_container.addWidget(self.__player_name)
+        main_container.addWidget(self.__active_player_widget)
         self.players_container = QHBoxLayout()
 
         self.__players: List[Player] = []
@@ -57,6 +57,10 @@ class MainWindow(QMainWindow):
                 if key.joystick_id in [i.joystick_id for i in self.__players]:
                     player = [i for i in self.__players if i.joystick_id == key.joystick_id][0]
                     self.on_remove_player.emit(player)
+            case JoystickButton.A:
+                if key.joystick_id in [i.joystick_id for i in self.__players]:
+                    player = [i for i in self.__players if i.joystick_id == key.joystick_id][0]
+                    self.__active_player_widget.on_player_click.emit(player)
             case _:
                 raise ValueError(f"Unexpected value ({key.button_id})")
 

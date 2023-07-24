@@ -1,12 +1,15 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from PyQt6.QtGui import QIntValidator
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLineEdit, QPushButton
+
+from player import Player
 
 
 class ScoreWidget(QWidget):
     def __init__(self, func: Callable[[int], None]):
         super().__init__()
+
         main_container = QHBoxLayout()
 
         self.__text_area = QLineEdit()
