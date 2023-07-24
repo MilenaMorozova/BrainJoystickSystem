@@ -1,7 +1,7 @@
-from threading import Thread
 from typing import Callable
 
 import pygame
+from PyQt6.QtCore import QThread
 
 
 class JoystickDownEvent:
@@ -29,5 +29,14 @@ class JoystickController:
                     self.on_button_press(joystick_down_event)
 
     def start(self):
-        thread1 = Thread(target=self.__handle_event)
+        thread1 = JoystickThread(target=self.__handle_event)
         thread1.start()
+
+
+class JoystickThread(QThread):
+    def __init__(self, target: Callable):
+        super().__init__()
+        self.target = target
+
+    def run(self) -> None:
+        self.target()

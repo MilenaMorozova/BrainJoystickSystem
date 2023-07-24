@@ -1,12 +1,13 @@
 import sys
-from typing import Callable
+from typing import Callable, List
 
 from PyQt6 import QtGui
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIntValidator
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QHBoxLayout, QVBoxLayout, QWidget, QPushButton, QLineEdit
-import pygame
 
+from joystick_button_enum import JoystickButton
+from player import Player
 from joystick_controller import JoystickController, JoystickDownEvent
 
 
@@ -37,12 +38,12 @@ class ScoreWidget(QWidget):
         return 0 if text_value == "" else int(text_value)
 
 
-class GamerButton(QWidget):
-    def __init__(self, name: str):
+class PlayerWidget(QWidget):
+    def __init__(self, player: Player):
         super().__init__()
         main_container = QVBoxLayout()
 
-        name_label = QLabel(name)
+        name_label = QLabel(player.name)
         main_container.addWidget(name_label)
 
         self.setLayout(main_container)
@@ -69,26 +70,25 @@ class GamerButton(QWidget):
 
 
 class MainWindow(QMainWindow):
+    on_new_player = pyqtSignal(Player)
+
     def __init__(self):
         super().__init__()
+        self.on_new_player.connect(self.__add_player)
 
         self.setWindowTitle("My App")
         main_widget = QWidget()
 
         main_container = QVBoxLayout()
-        self.__gamer_name = QLabel("Hello")
-        self.__gamer_name.setStyleSheet("background-color: #000000; color: #FFFFFF;")
+        self.__player_name = QLabel("Hello")
+        self.__player_name.setStyleSheet("background-color: #000000; color: #FFFFFF;")
 
-        main_container.addWidget(self.__gamer_name)
+        main_container.addWidget(self.__player_name)
+        self.players_container = QHBoxLayout()
 
-        gamers_container = QHBoxLayout()
-        gamer1 = GamerButton("gamer1")
-        gamers_container.addWidget(gamer1)
+        self.__players: List[Player] = []
 
-        gamer2 = GamerButton("gamer2")
-        gamers_container.addWidget(gamer2)
-
-        main_container.addLayout(gamers_container)
+        main_container.addLayout(self.players_container)
 
         main_widget.setLayout(main_container)
         self.setCentralWidget(main_widget)
@@ -97,13 +97,22 @@ class MainWindow(QMainWindow):
         joystick_controller.start()
 
     def keyPressEvent(self, key_event: QtGui.QKeyEvent) -> None:
-        self.__gamer_name.setText(str(key_event.key()))
+        self.__player_name.setText(str(key_event.key()))
 
         if key_event.key() == Qt.Key.Key_Escape:
             self.close()
 
     def key_joystick_event(self, key: JoystickDownEvent) -> None:
-        self.__gamer_name.setText(str(key))
+        # start button - connect joystick
+        if key.button_id == JoystickButton.START \
+                and key.joystick_id not in [i.joystick_id for i in self.__players]:
+            new_player = Player("name", key.joystick_id)
+            self.on_new_player.emit(new_player)
+
+    def __add_player(self, player: Player):
+        self.__players.append(player)
+        # player_widget = PlayerWidget(player)
+        self.players_container.addWidget(QLabel("new player"))
 
 
 app = QApplication(sys.argv)
