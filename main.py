@@ -99,7 +99,7 @@ class MainWindow(QMainWindow):
     def keyPressEvent(self, key_event: QtGui.QKeyEvent) -> None:
         self.__player_name.setText(str(key_event.key()))
 
-        if key_event.key() == Qt.Key.Key_Escape:
+        if key_event.key() == Qt.Key.Key_Backspace:
             self.close()
 
     def key_joystick_event(self, key: JoystickDownEvent) -> None:
@@ -111,7 +111,7 @@ class MainWindow(QMainWindow):
 
     def __add_player(self, player: Player):
         self.__players.append(player)
-        # player_widget = PlayerWidget(player)
+        player_widget = PlayerWidget(player)
         self.players_container.addWidget(QLabel("new player"))
 
 
