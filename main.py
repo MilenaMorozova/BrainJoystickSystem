@@ -8,7 +8,9 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout,
 from joystick_button_enum import JoystickButton
 from player import Player
 from joystick_controller import JoystickController, JoystickDownEvent
+from state import StatusEnum, State
 from widgets.active_player_widget import ActivePlayerWidget
+from widgets.buttons_panel import ButtonsPanel
 from widgets.player_widget import PlayerWidget
 
 
@@ -24,25 +26,25 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("My App")
         main_widget = QWidget()
 
-        main_container = QVBoxLayout()
+        self.__buttons_panel = ButtonsPanel()
+
         self.__active_player_widget = ActivePlayerWidget()
 
-        main_container.addWidget(self.__active_player_widget)
         self.players_container = QHBoxLayout()
-
         self.__players: List[Player] = []
 
+        main_container = QVBoxLayout()
+        main_container.addLayout(self.__buttons_panel)
+        main_container.addWidget(self.__active_player_widget)
         main_container.addLayout(self.players_container)
-
         main_widget.setLayout(main_container)
         self.setCentralWidget(main_widget)
 
         joystick_controller = JoystickController(self.key_joystick_event)
         joystick_controller.start()
 
-    def keyPressEvent(self, key_event: QtGui.QKeyEvent) -> None:
-        self.__player_name.setText(str(key_event.key()))
 
+    def keyPressEvent(self, key_event: QtGui.QKeyEvent) -> None:
         if key_event.key() == Qt.Key.Key_Backspace:
             self.close()
 
