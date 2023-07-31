@@ -14,6 +14,12 @@ class ButtonsPanel(QHBoxLayout):
         self.play_button = QPushButton("Начать")
         self.play_button.setFixedWidth(100)
         self.play_button.clicked.connect(self.__click_to_start_pause_button)
+
+        self.reset_button = QPushButton("Сбросить")
+        self.reset_button.setFixedWidth(100)
+        self.reset_button.clicked.connect(self.__on_click_reset_button)
+
+        self.addWidget(self.reset_button)
         self.addWidget(self.play_button)
 
     def handle_change_status(self, status: StatusEnum):
@@ -33,3 +39,6 @@ class ButtonsPanel(QHBoxLayout):
                 self.__state.status = StatusEnum.PAUSED
             case StatusEnum.PAUSED:
                 self.__state.status = StatusEnum.STARTED
+
+    def __on_click_reset_button(self):
+        self.__state.status = StatusEnum.STOPPED
