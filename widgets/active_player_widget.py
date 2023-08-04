@@ -40,8 +40,11 @@ class ActivePlayerWidget(QLabel):
 
     @active_player.setter
     def active_player(self, player: Optional[Player]):
+        if self.__active_player is not None:
+            self.__active_player.signals.on_change_name.disconnect(self.change_active_player_name)
         self.__active_player = player
         if player is not None:
+            player.signals.on_change_name.connect(self.change_active_player_name)
             self.setText(player.name)
             self.__state.status = StatusEnum.PAUSED
 
@@ -52,3 +55,6 @@ class ActivePlayerWidget(QLabel):
 
     def on_tick(self, rest_of_question_time: float):
         self.setText(str(int(rest_of_question_time)))
+
+    def change_active_player_name(self, old_name: str, new_name: str):
+        self.setText(new_name)

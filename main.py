@@ -8,7 +8,6 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout,
 from joystick_button_enum import JoystickButton
 from player import Player
 from joystick_controller import JoystickController, JoystickDownEvent
-from state import StatusEnum, State
 from widgets.active_player_widget import ActivePlayerWidget
 from widgets.buttons_panel import ButtonsPanel
 from widgets.player_widget import PlayerWidget
@@ -42,7 +41,6 @@ class MainWindow(QMainWindow):
 
         joystick_controller = JoystickController(self.key_joystick_event)
         joystick_controller.start()
-
 
     def keyPressEvent(self, key_event: QtGui.QKeyEvent) -> None:
         if key_event.key() == Qt.Key.Key_Backspace:
