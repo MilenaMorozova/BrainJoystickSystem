@@ -1,26 +1,38 @@
-from PyQt6.QtWidgets import QHBoxLayout, QPushButton
+from PyQt6.QtWidgets import QPushButton
 
 from state import State, StatusEnum
 
+BUTTON_CSS  = """
+    min-width: 200px;
+    max-width: 200px;
+    min-height: 80px;
+    max-height: 80px;
+    font-size: 26px;
+    border-radius: 35px;
+    color: white;
+    background-color: #0097F5;
+"""
 
-class ButtonsPanel(QHBoxLayout):
 
-    def __init__(self):
+class ButtonsPanel:
+
+    def __init__(self, parent):
         super().__init__()
-
+        self.parent = parent
         self.__state = State.get_state()
         self.__state.on_change_status.connect(self.handle_change_status)
 
-        self.play_button = QPushButton("Начать")
-        self.play_button.setFixedWidth(100)
+        self.play_button = QPushButton("Начать", parent)
+        self.play_button.setStyleSheet(BUTTON_CSS)
+        self.play_button.move(20, 20)
         self.play_button.clicked.connect(self.__click_to_start_pause_button)
 
-        self.reset_button = QPushButton("Сбросить")
-        self.reset_button.setFixedWidth(100)
+        self.reset_button = QPushButton("Сбросить", parent)
+        self.reset_button.setStyleSheet(BUTTON_CSS)
         self.reset_button.clicked.connect(self.__on_click_reset_button)
 
-        self.addWidget(self.reset_button)
-        self.addWidget(self.play_button)
+        parent.on_resize.connect(self.update)
+        self.update()
 
     def handle_change_status(self, status: StatusEnum):
         match status:
@@ -42,3 +54,7 @@ class ButtonsPanel(QHBoxLayout):
 
     def __on_click_reset_button(self):
         self.__state.status = StatusEnum.STOPPED
+
+    def update(self):
+        self.reset_button.move(self.parent.width() - 220, 20)
+

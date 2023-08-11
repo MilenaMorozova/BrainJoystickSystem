@@ -1,11 +1,16 @@
 from typing import Optional
 
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtWidgets import QLabel
 
 from player import Player
 from question_timer import QuestionTimer
 from state import State, StatusEnum
+
+STYLE = """
+    color: #FFFFFF;
+    font-size: 64px;
+"""
 
 
 class ActivePlayerWidget(QLabel):
@@ -15,7 +20,10 @@ class ActivePlayerWidget(QLabel):
         super().__init__()
 
         self.__active_player: Optional[Player] = None
-        self.setStyleSheet("background-color: #000000; color: #FFFFFF;")
+
+        self.setStyleSheet(STYLE)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.on_player_click.connect(self.player_click)
 
         self.__state = State.get_state()

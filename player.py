@@ -5,7 +5,8 @@ class Player:
     class Signals(QObject):
         on_change_name = pyqtSignal(str, str)
 
-    def __init__(self, name: str, joystick_id: int):
+    def __init__(self, name: str, joystick_id: int, color: str):
+        self.color = color
         self.joystick_id = joystick_id
         self.__name = name
         self.signals = self.Signals()
