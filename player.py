@@ -1,11 +1,12 @@
 from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.QtGui import QColor
 
 
 class Player:
     class Signals(QObject):
         on_change_name = pyqtSignal(str, str)
 
-    def __init__(self, name: str, joystick_id: int, color: str):
+    def __init__(self, name: str, joystick_id: int, color: QColor):
         self.color = color
         self.joystick_id = joystick_id
         self.__name = name

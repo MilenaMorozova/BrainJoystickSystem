@@ -5,6 +5,7 @@ from typing import List
 
 from PyQt6 import QtGui
 from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout, QWidget
 
 from joystick_button_enum import JoystickButton
@@ -15,12 +16,12 @@ from widgets.buttons_panel import ButtonsPanel
 from widgets.player_widget import PlayerWidget
 
 COLORS = [
-    '#F1495C',  # pink
-    '#F69A39',  # orange
-    '#F9DE27',  # yellow
-    '#75BC6A',  # green
-    '#5891F6',  # blue
-    '#BA75DA',  # purple
+    QColor('#F1495C'),  # pink
+    QColor('#F69A39'),  # orange
+    QColor('#F9DE27'),  # yellow
+    QColor('#75BC6A'),  # green
+    QColor('#5891F6'),  # blue
+    QColor('#BA75DA'),  # purple
 ]
 
 MAIN_STYLE = """
@@ -82,6 +83,7 @@ class MainWindow(QMainWindow):
             case JoystickButton.A:
                 if key.joystick_id in [i.joystick_id for i in self.__players]:
                     player = [i for i in self.__players if i.joystick_id == key.joystick_id][0]
+                    self.get_player_widget(player).on_click_a.emit()
                     self.__active_player_widget.on_player_click.emit(player)
             case _:
                 raise ValueError(f"Unexpected value ({key.button_id})")
@@ -104,6 +106,9 @@ class MainWindow(QMainWindow):
         self.__players.remove(player)
         self.players_container.itemAt(index).widget().deleteLater()
 
+    def get_player_widget(self, player: Player) -> PlayerWidget:
+        index = self.__players.index(player)
+        return self.players_container.itemAt(index).widget()
 
 app = QApplication(sys.argv)
 

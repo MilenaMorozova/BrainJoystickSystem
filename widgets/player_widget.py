@@ -1,4 +1,5 @@
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtProperty, QPropertyAnimation, QSequentialAnimationGroup, pyqtSignal
+from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QVBoxLayout, QLabel, QFrame
 
 from widgets.score_widget import ScoreWidget
@@ -6,10 +7,10 @@ from player import Player
 from widgets.text_edit import TextEdit
 
 
-def get_widget_style(background_color: str):
+def get_widget_style(background_color: QColor):
     return f"""
     max-height: 200;
-    background-color: {background_color};
+    background-color: rgb({background_color.red()}, {background_color.green()}, {background_color.blue()});
 """
 
 
@@ -20,9 +21,12 @@ LABEL_STYLE = """
 
 
 class PlayerWidget(QFrame):
+    on_click_a = pyqtSignal()
+
     def __init__(self, player: Player):
         super().__init__()
         self.player = player
+        self.on_click_a.connect(self.start_blinking)
         self.player.signals.on_change_name.connect(self.change_player_name_handler)
 
         self.main_container = QVBoxLayout()
@@ -52,6 +56,10 @@ class PlayerWidget(QFrame):
 
         self.setStyleSheet(get_widget_style(player.color))
 
+        #for_animation
+        self._background_color = player.color
+        self._anim = None
+
     def update_score(self, value: int):
         self.score += value
 
@@ -77,3 +85,37 @@ class PlayerWidget(QFrame):
 
     def change_player_name_handler(self, old_name: str, new_name: str):
         self.name_label.setText(new_name)
+
+    # for animations
+    @pyqtProperty(QColor)
+    def background_color(self):
+        return self._background_color
+
+    @background_color.setter
+    def background_color(self, value):
+        self._background_color = value
+        style = f"""
+            max-height: 200;
+            background-color: rgb({self._background_color.red()}, {self._background_color.green()}, {self._background_color.blue()});
+        """
+        self.setStyleSheet(style)
+
+    def start_blinking(self):
+        self.anim = QPropertyAnimation(self, b"background_color")
+        self.anim.setEndValue(QColor("white"))
+        self.anim.setDuration(120)
+        self.anim2 = QPropertyAnimation(self, b"background_color")
+        self.anim2.setEndValue(self.player.color)
+        self.anim2.setDuration(120)
+        self.anim3 = QPropertyAnimation(self, b"background_color")
+        self.anim3.setEndValue(QColor("white"))
+        self.anim3.setDuration(120)
+        self.anim4 = QPropertyAnimation(self, b"background_color")
+        self.anim4.setEndValue(self.player.color)
+        self.anim4.setDuration(120)
+        self.anim_group = QSequentialAnimationGroup()
+        self.anim_group.addAnimation(self.anim)
+        self.anim_group.addAnimation(self.anim2)
+        self.anim_group.addAnimation(self.anim3)
+        self.anim_group.addAnimation(self.anim4)
+        self.anim_group.start()
