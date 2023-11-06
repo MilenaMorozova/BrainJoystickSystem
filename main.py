@@ -112,7 +112,8 @@ class MainWindow(QMainWindow):
 
 app = QApplication(sys.argv)
 
+# TODO разобраться с размером экрана
 window = MainWindow()
-window.showFullScreen()
-
+#window.showFullScreen()
+window.show()
 app.exec()
