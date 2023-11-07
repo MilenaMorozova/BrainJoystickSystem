@@ -3,12 +3,12 @@ from typing import Callable
 
 from PyQt6.QtCore import QTimer
 
-from state import State, StatusEnum
+from state import State, StatusEnum, OnChangeStatusSignalArgs
 
 
 class QuestionTimer:
     TICK_TIME = 100
-    TIMER_TIME = 10  # secs
+    TIMER_TIME = 2  # secs
 
     def __init__(self, on_tick: Callable[[float], None]):
         self.start_time = None
@@ -17,20 +17,20 @@ class QuestionTimer:
         self.rest_of_question_time = QuestionTimer.TIMER_TIME
 
         self.__state = State.get_state()
-        self.__state.on_change_status.connect(self.change_status_handler)
+        self.__state.on_change_status.connect(self._change_status_handler)
 
         self.on_tick = on_tick
 
-    def change_status_handler(self, status: StatusEnum):
-        if status == StatusEnum.STARTED:
+    def _change_status_handler(self, args: OnChangeStatusSignalArgs):
+        if args.new_status == StatusEnum.STARTED:
             self.start_time = datetime.now()
             self.timer.start(self.TICK_TIME)
 
-        if status == StatusEnum.PAUSED:
+        if args.new_status == StatusEnum.PAUSED:
             self.rest_of_question_time = self.get_current_rest_of_question_time()
             self.timer.stop()
 
-        if status == StatusEnum.STOPPED:
+        if args.new_status == StatusEnum.STOPPED:
             self.rest_of_question_time = QuestionTimer.TIMER_TIME
             self.timer.stop()
 

@@ -1,9 +1,12 @@
+from dataclasses import dataclass
+
 from PyQt6.QtCore import Qt, pyqtProperty, QPropertyAnimation, QSequentialAnimationGroup, pyqtSignal
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QVBoxLayout, QLabel, QFrame
 
+from helpers.signals import SignalArgs
 from widgets.score_widget import ScoreWidget
-from player import Player
+from player import Player, OnChangeNameSignalArgs
 from widgets.text_edit import TextEdit
 
 
@@ -20,14 +23,19 @@ LABEL_STYLE = """
 """
 
 
+@dataclass
+class OnClickASignalHandler(SignalArgs):
+    pass
+
+
 class PlayerWidget(QFrame):
-    on_click_a = pyqtSignal()
+    on_click_a = pyqtSignal(OnClickASignalHandler)
 
     def __init__(self, player: Player):
         super().__init__()
         self.player = player
-        self.on_click_a.connect(self.start_blinking)
-        self.player.signals.on_change_name.connect(self.change_player_name_handler)
+        self.on_click_a.connect(lambda args: self.start_blinking())
+        self.player.signals.on_change_name.connect(self._on_change_player_name_handler)
 
         self.main_container = QVBoxLayout()
 
@@ -83,8 +91,8 @@ class PlayerWidget(QFrame):
         self.player.name = self.name_edit.text()
         self.name_label.show()
 
-    def change_player_name_handler(self, old_name: str, new_name: str):
-        self.name_label.setText(new_name)
+    def _on_change_player_name_handler(self, args: OnChangeNameSignalArgs):
+        self.name_label.setText(args.new_name)
 
     # for animations
     @pyqtProperty(QColor)

@@ -17,6 +17,7 @@ BUTTON_STYLE = """
     border: none;
 """
 
+
 class ScoreWidget(QWidget):
     def __init__(self, func: Callable[[int], None]):
         super().__init__()

@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QPushButton
 
-from state import State, StatusEnum
+from state import State, StatusEnum, OnChangeStatusSignalArgs
 
 BUTTON_CSS  = """
     min-width: 200px;
@@ -20,7 +20,7 @@ class ButtonsPanel:
         super().__init__()
         self.parent = parent
         self.__state = State.get_state()
-        self.__state.on_change_status.connect(self.handle_change_status)
+        self.__state.on_change_status.connect(self._change_status_handler)
 
         self.play_button = QPushButton("Начать", parent)
         self.play_button.setStyleSheet(BUTTON_CSS)
@@ -31,11 +31,11 @@ class ButtonsPanel:
         self.reset_button.setStyleSheet(BUTTON_CSS)
         self.reset_button.clicked.connect(self.__on_click_reset_button)
 
-        parent.on_resize.connect(self.update)
+        parent.on_resize.connect(lambda args: self.update())
         self.update()
 
-    def handle_change_status(self, status: StatusEnum):
-        match status:
+    def _change_status_handler(self, args: OnChangeStatusSignalArgs):
+        match args.new_status:
             case StatusEnum.STOPPED:
                 self.play_button.setText("Начать")
             case StatusEnum.STARTED:

@@ -1,6 +1,9 @@
+from dataclasses import dataclass
 from enum import IntEnum
 
-from PyQt6.QtCore import pyqtSignal, QObject
+from PyQt6.QtCore import QObject, pyqtSignal
+
+from helpers.signals import SignalArgs
 
 
 class StatusEnum(IntEnum):
@@ -9,9 +12,15 @@ class StatusEnum(IntEnum):
     STARTED = 2
 
 
+@dataclass
+class OnChangeStatusSignalArgs(SignalArgs):
+    new_status: StatusEnum
+    old_status: StatusEnum
+
+
 class State(QObject):
     __instance = None
-    on_change_status = pyqtSignal(StatusEnum)
+    on_change_status = pyqtSignal(OnChangeStatusSignalArgs)
 
     def __init__(self):
         super().__init__()
@@ -26,8 +35,11 @@ class State(QObject):
         if self.__status == value:
             return
 
+        old_status = self.__status
         self.__status = value
-        self.on_change_status.emit(value)
+        self.on_change_status.emit(
+            OnChangeStatusSignalArgs(sender=self, old_status=old_status, new_status=value)
+        )
 
     @staticmethod
     def get_state() -> 'State':
