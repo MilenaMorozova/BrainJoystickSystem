@@ -4,7 +4,7 @@ from typing import Callable
 
 import pygame
 
-from joystick_button_enum import JoystickButton
+from enums.joystick_button_enum import JoystickButton
 
 
 @dataclass
@@ -20,7 +20,7 @@ class JoystickController:
     def __init__(self, on_button_press: Callable[[JoystickDownEvent], None]):
         pygame.init()
         pygame.joystick.init()
-        self.__joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+        self._joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
         self.on_button_press = on_button_press
 
     def __handle_event(self):
