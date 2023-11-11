@@ -17,16 +17,17 @@ BUTTON_STYLE = """
     border: none;
 """
 
+
 class ScoreWidget(QWidget):
     def __init__(self, func: Callable[[int], None]):
         super().__init__()
 
         main_container = QHBoxLayout()
 
-        self.__text_area = TextEdit()
+        self._text_area = TextEdit()
         number_validator = QIntValidator()
-        self.__text_area.setValidator(number_validator)
-        self.__text_area.setPlaceholderText("0")
+        self._text_area.setValidator(number_validator)
+        self._text_area.setPlaceholderText("0")
 
         minus_button = QPushButton("-")
         minus_button.setStyleSheet(BUTTON_STYLE)
@@ -37,11 +38,11 @@ class ScoreWidget(QWidget):
         plus_button.clicked.connect(lambda: func(self.get_text_as_number()))
 
         main_container.addWidget(minus_button)
-        main_container.addWidget(self.__text_area)
+        main_container.addWidget(self._text_area)
         main_container.addWidget(plus_button)
 
         self.setLayout(main_container)
 
     def get_text_as_number(self) -> int:
-        text_value = self.__text_area.text().strip()
+        text_value = self._text_area.text().strip()
         return 0 if text_value == "" else int(text_value)

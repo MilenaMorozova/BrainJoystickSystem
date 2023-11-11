@@ -1,8 +1,10 @@
 from PyQt6.QtWidgets import QPushButton
 
-from state import State, StatusEnum
+from enums.status_enum import StatusEnum
+from stores.game_store import OnChangeStateSignalArgs
+from stores.store import Store
 
-BUTTON_CSS  = """
+BUTTON_CSS = """
     min-width: 200px;
     max-width: 200px;
     min-height: 80px;
@@ -19,23 +21,23 @@ class ButtonsPanel:
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
-        self.__state = State.get_state()
-        self.__state.on_change_status.connect(self.handle_change_status)
+        self._game = Store.get().game
+        self._game.on_change_state.connect(self._change_status_handler)
 
         self.play_button = QPushButton("Начать", parent)
         self.play_button.setStyleSheet(BUTTON_CSS)
         self.play_button.move(20, 20)
-        self.play_button.clicked.connect(self.__click_to_start_pause_button)
+        self.play_button.clicked.connect(self._on_click_play_handler)
 
         self.reset_button = QPushButton("Сбросить", parent)
         self.reset_button.setStyleSheet(BUTTON_CSS)
-        self.reset_button.clicked.connect(self.__on_click_reset_button)
+        self.reset_button.clicked.connect(self. _on_click_reset_handler)
 
-        parent.on_resize.connect(self.update)
+        parent.on_resize.connect(lambda args: self.update())
         self.update()
 
-    def handle_change_status(self, status: StatusEnum):
-        match status:
+    def _change_status_handler(self, args: OnChangeStateSignalArgs):
+        match args.new_state.status:
             case StatusEnum.STOPPED:
                 self.play_button.setText("Начать")
             case StatusEnum.STARTED:
@@ -43,18 +45,11 @@ class ButtonsPanel:
             case StatusEnum.PAUSED:
                 self.play_button.setText("Продолжить")
 
-    def __click_to_start_pause_button(self):
-        match self.__state.status:
-            case StatusEnum.STOPPED:
-                self.__state.status = StatusEnum.STARTED
-            case StatusEnum.STARTED:
-                self.__state.status = StatusEnum.PAUSED
-            case StatusEnum.PAUSED:
-                self.__state.status = StatusEnum.STARTED
-
-    def __on_click_reset_button(self):
-        self.__state.status = StatusEnum.STOPPED
-
     def update(self):
         self.reset_button.move(self.parent.width() - 220, 20)
 
+    def _on_click_play_handler(self):
+        self._game.state.on_click_play()
+
+    def _on_click_reset_handler(self):
+        self._game.state.on_click_reset()

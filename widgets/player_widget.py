@@ -1,9 +1,15 @@
+from dataclasses import dataclass
+
 from PyQt6.QtCore import Qt, pyqtProperty, QPropertyAnimation, QSequentialAnimationGroup, pyqtSignal
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QVBoxLayout, QLabel, QFrame
 
+from enums.joystick_button_enum import JoystickButton
+from helpers.signals import SignalArgs
+from joystick_input import OnPlayerClickSignalArgs
+from stores.store import Store
 from widgets.score_widget import ScoreWidget
-from player import Player
+from player import Player, OnChangeNameSignalArgs, OnChangeScoreSignalArgs
 from widgets.text_edit import TextEdit
 
 
@@ -21,13 +27,14 @@ LABEL_STYLE = """
 
 
 class PlayerWidget(QFrame):
-    on_click_a = pyqtSignal()
 
     def __init__(self, player: Player):
         super().__init__()
         self.player = player
-        self.on_click_a.connect(self.start_blinking)
-        self.player.signals.on_change_name.connect(self.change_player_name_handler)
+        self._input = Store.get().input
+        self._input.on_player_click.connect(self._on_player_click)
+        self.player.on_change_name.connect(self._on_change_player_name_handler)
+        self.player.on_change_score.connect(self._on_change_score_handler)
 
         self.main_container = QVBoxLayout()
 
@@ -45,8 +52,7 @@ class PlayerWidget(QFrame):
 
         self.setLayout(self.main_container)
 
-        self.__score = 0
-        self.score_label = QLabel(str(self.__score))
+        self.score_label = QLabel(str(player.score))
         self.score_label.setStyleSheet(LABEL_STYLE)
         self.score_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.main_container.addWidget(self.score_label)
@@ -61,16 +67,7 @@ class PlayerWidget(QFrame):
         self._anim = None
 
     def update_score(self, value: int):
-        self.score += value
-
-    @property
-    def score(self) -> int:
-        return self.__score
-
-    @score.setter
-    def score(self, value: int):
-        self.__score = value
-        self.score_label.setText(str(self.__score))
+        self.player.score += value
 
     def double_click_to_name_label_handler(self, event):
         self.name_label.hide()
@@ -83,8 +80,15 @@ class PlayerWidget(QFrame):
         self.player.name = self.name_edit.text()
         self.name_label.show()
 
-    def change_player_name_handler(self, old_name: str, new_name: str):
-        self.name_label.setText(new_name)
+    def _on_change_player_name_handler(self, args: OnChangeNameSignalArgs):
+        self.name_label.setText(args.new_name)
+
+    def _on_change_score_handler(self, args: OnChangeScoreSignalArgs):
+        self.score_label.setText(str(args.new_score))
+
+    def _on_player_click(self, args: OnPlayerClickSignalArgs):
+        if args.player == self.player and args.key == JoystickButton.A:
+            self.start_blinking()
 
     # for animations
     @pyqtProperty(QColor)
@@ -119,3 +123,8 @@ class PlayerWidget(QFrame):
         self.anim_group.addAnimation(self.anim3)
         self.anim_group.addAnimation(self.anim4)
         self.anim_group.start()
+
+    def __del__(self):
+        self._input.on_player_click.disconnect(self._on_player_click)
+        self.player.on_change_name.disconnect(self._on_change_player_name_handler)
+        self.player.on_change_score.disconnect(self._on_change_score_handler)
