@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
 
 from helpers.signals import SignalArgs
 from states.state_with_store import init_all_states
-from states.stopped_state import StoppedState
+from states.stop_state import StopState
 from stores.store import Store
 from widgets.buttons_panel import ButtonsPanel
 from widgets.central_widget import CentralWidget
@@ -59,8 +59,12 @@ class MainWindow(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    Store.get().game.state = StoppedState()
+    store = Store.get()
+    store.game.state = StopState()
     init_all_states()
+
+    store.input.start()
+
     # TODO: Solve problem with size of window
     window = MainWindow()
     # window.showFullScreen()

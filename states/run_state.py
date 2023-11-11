@@ -4,8 +4,8 @@ from joystick_input import OnPlayerClickSignalArgs
 from states.state_with_store import StateWithStore
 
 
-class StartedState(StateWithStore):
-    status = StatusEnum.STARTED
+class RunState(StateWithStore):
+    status = StatusEnum.RUN
 
     def on_enter(self):
         self.store.question_timer.start()
@@ -15,13 +15,13 @@ class StartedState(StateWithStore):
         self.store.input.on_player_click.disconnect(self._on_player_click)
 
     def on_click_play(self):
-        self._to(StatusEnum.PAUSED)
+        self._set_next_state(StatusEnum.PAUSE)
 
     def on_click_reset(self):
-        self._to(StatusEnum.STOPPED)
+        self._set_next_state(StatusEnum.STOP)
 
     def _on_player_click(self, args: OnPlayerClickSignalArgs):
         if args.key == JoystickButton.A:
             self.store.game.active_player = args.player
-            self._to(StatusEnum.PLAYER_ANSWER)
+            self._set_next_state(StatusEnum.PLAYER_ANSWER)
 
