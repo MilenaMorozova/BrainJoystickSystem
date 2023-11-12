@@ -1,20 +1,20 @@
 from enums.status_enum import StatusEnum
 
 
-class State:
-    status = StatusEnum.STARTED
+class BaseState:
+    status = StatusEnum.RUN
 
     @classmethod
     def is_stopped(cls) -> bool:
-        return cls.status == StatusEnum.STOPPED
+        return cls.status == StatusEnum.STOP
 
     @classmethod
     def is_paused(cls) -> bool:
-        return cls.status == StatusEnum.PAUSED
+        return cls.status == StatusEnum.PAUSE
 
     @classmethod
     def is_started(cls) -> bool:
-        return cls.status == StatusEnum.STARTED
+        return cls.status == StatusEnum.RUN
 
     @classmethod
     def is_player_answer(cls) -> bool:

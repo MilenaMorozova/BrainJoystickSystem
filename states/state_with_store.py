@@ -1,18 +1,18 @@
 from typing import Dict, Type
 
 from enums.status_enum import StatusEnum
-from states.state import State
+from states.base_state import BaseState
 from stores.store import Store
 
 
-_STATES: Dict[StatusEnum, Type[State]] = {}
+_STATES: Dict[StatusEnum, Type[BaseState]] = {}
 
 
-class StateWithStore(State):
+class StateWithStore(BaseState):
     def __init__(self):
         self.store = Store.get()
 
-    def _to(self, status: StatusEnum):
+    def _set_next_state(self, status: StatusEnum):
         global _STATES
 
         if status in _STATES:
@@ -22,15 +22,15 @@ class StateWithStore(State):
 
 
 def init_all_states():
-    from states.paused_state import PausedState
+    from states.pause_state import PauseState
     from states.player_answer_state import PlayerAnswerState
-    from states.started_state import StartedState
-    from states.stopped_state import StoppedState
+    from states.run_state import RunState
+    from states.stop_state import StopState
     global _STATES
 
     _STATES = {
-        StatusEnum.PAUSED: PausedState,
+        StatusEnum.PAUSE: PauseState,
         StatusEnum.PLAYER_ANSWER: PlayerAnswerState,
-        StatusEnum.STARTED: StartedState,
-        StatusEnum.STOPPED: StoppedState,
+        StatusEnum.RUN: RunState,
+        StatusEnum.STOP: StopState,
     }

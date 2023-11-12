@@ -5,7 +5,7 @@ from PyQt6.QtCore import QObject, pyqtSignal
 
 from helpers.signals import SignalArgs
 from player import Player
-from states.state import State
+from states.base_state import BaseState
 
 
 @dataclass
@@ -16,8 +16,8 @@ class OnChangeActivePlayerSignalArgs(SignalArgs):
 
 @dataclass
 class OnChangeStateSignalArgs(SignalArgs):
-    new_state: State
-    old_state: State
+    new_state: BaseState
+    old_state: BaseState
 
 
 class GameStore(QObject):
@@ -27,7 +27,7 @@ class GameStore(QObject):
     def __init__(self):
         super().__init__()
         self._active_player: Optional[Player] = None
-        self._state: Optional[State] = None
+        self._state: Optional[BaseState] = None
 
     @property
     def active_player(self) -> Optional[Player]:
@@ -48,11 +48,11 @@ class GameStore(QObject):
             ))
 
     @property
-    def state(self) -> State:
+    def state(self) -> BaseState:
         return self._state
 
     @state.setter
-    def state(self, value: State):
+    def state(self, value: BaseState):
         if self._state == value:
             return
 

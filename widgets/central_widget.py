@@ -31,15 +31,15 @@ class CentralWidget(QLabel):
 
     def _change_status_handler(self, args: OnChangeStateSignalArgs):
         match args.new_state.status:
-            case StatusEnum.PAUSED:
+            case StatusEnum.PAUSE:
                 self.setText("Пауза")
             case StatusEnum.PLAYER_ANSWER:
                 self.game.active_player.on_change_name.connect(self._on_change_active_player_name_handler)
                 self.game.on_change_active_player.connect(self._unsubscribe_on_change_active_player)
                 self.setText(self.game.active_player.name)
-            case StatusEnum.STOPPED:
+            case StatusEnum.STOP:
                 self.setText("Нажмите начать")
-            case StatusEnum.STARTED:
+            case StatusEnum.RUN:
                 self.setText(str(int(self.question_timer.get_rest())))
 
     def _unsubscribe_on_change_active_player(self, args: OnChangeActivePlayerSignalArgs):

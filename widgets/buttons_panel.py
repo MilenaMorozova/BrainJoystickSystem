@@ -38,11 +38,11 @@ class ButtonsPanel:
 
     def _change_status_handler(self, args: OnChangeStateSignalArgs):
         match args.new_state.status:
-            case StatusEnum.STOPPED:
+            case StatusEnum.STOP:
                 self.play_button.setText("Начать")
-            case StatusEnum.STARTED:
+            case StatusEnum.RUN:
                 self.play_button.setText("Пауза")
-            case StatusEnum.PAUSED:
+            case StatusEnum.PAUSE:
                 self.play_button.setText("Продолжить")
 
     def update(self):
