@@ -25,7 +25,7 @@ class JoystickEventHandler:
         self._joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
         self.on_button_press = on_button_press
 
-    def _wait_events(self):
+    def _handle_events(self):
         while True:
             events = pygame.event.get()
             for event in events:
@@ -40,5 +40,5 @@ class JoystickEventHandler:
             self.on_button_press(joystick_down_event)
 
     def start(self):
-        thread = Thread(target=self._wait_events)
+        thread = Thread(target=self._handle_events)
         thread.start()
