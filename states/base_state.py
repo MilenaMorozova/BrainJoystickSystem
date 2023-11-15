@@ -5,15 +5,15 @@ class BaseState:
     status = StatusEnum.RUN
 
     @classmethod
-    def is_stopped(cls) -> bool:
+    def is_stop(cls) -> bool:
         return cls.status == StatusEnum.STOP
 
     @classmethod
-    def is_paused(cls) -> bool:
+    def is_pause(cls) -> bool:
         return cls.status == StatusEnum.PAUSE
 
     @classmethod
-    def is_started(cls) -> bool:
+    def is_run(cls) -> bool:
         return cls.status == StatusEnum.RUN
 
     @classmethod

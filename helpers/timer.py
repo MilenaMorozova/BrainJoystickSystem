@@ -25,18 +25,20 @@ class Timer(QObject):
     def __init__(self, time: float = 10):
         super().__init__()
         self._max_time = time
-        self._rest_of_question_time = time
+        self._rest_of_time = time
         self._start_time = None
         self._timer = QTimer()
         self._timer.timeout.connect(self._tick)
 
     def get_rest(self) -> float:
-        return self._rest_of_question_time - (datetime.now() - self._start_time).total_seconds()
+        if self._start_time:
+            return self._rest_of_time - (datetime.now() - self._start_time).total_seconds()
+
+        return self._rest_of_time
 
     def set_max_time(self, time: float):
-        self._timer.stop()
+        self._stop()
         self._max_time = time
-        self._rest_of_question_time = time
 
     def start(self):
         self._start_time = datetime.now()
@@ -44,12 +46,16 @@ class Timer(QObject):
 
     def pause(self):
         if self._start_time is not None:
-            self._rest_of_question_time = self.get_rest()
-            self._timer.stop()
+            self._rest_of_time = self.get_rest()
+            self._stop()
 
     def reset(self):
+        self._stop()
+        self._rest_of_time = self._max_time
+
+    def _stop(self):
         self._timer.stop()
-        self._rest_of_question_time = self._max_time
+        self._start_time = None
 
     def _tick(self):
         current_rest = self.get_rest()
