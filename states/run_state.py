@@ -17,9 +17,6 @@ class RunState(StateWithStore):
     def on_click_play(self):
         self._set_next_state(StatusEnum.PAUSE)
 
-    def on_click_reset(self):
-        self._set_next_state(StatusEnum.STOP)
-
     def _on_player_click(self, args: OnPlayerClickSignalArgs):
         if args.key == JoystickButton.A:
             self.store.game.active_player = args.player
