@@ -5,10 +5,10 @@ from PyQt6.QtCore import QSize, pyqtSignal
 from PyQt6.QtWidgets import QWidget
 
 from helpers.signals import OnResizeSignalArgs
-from widgets.admin.buttons_panel import ButtonsPanel
+from widgets.presenter.buttons_panel import ButtonsPanel
 
 
-class AdminWindow(QWidget):
+class PresenterWindow(QWidget):
     on_resize = pyqtSignal(OnResizeSignalArgs)
 
     def __init__(self):

@@ -5,9 +5,8 @@ from PyQt6.QtWidgets import QApplication
 from states.state_with_store import init_all_states
 from states.stop_state import StopState
 from stores.store import Store
-from widgets.admin.admin_window import AdminWindow
 from widgets.main_window import MainWindow
-
+from widgets.presenter.presenter_window import PresenterWindow
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -18,8 +17,8 @@ if __name__ == '__main__':
     store.input.start()
 
     main_window = MainWindow()
-    admin_window = AdminWindow()
+    presenter_window = PresenterWindow()
 
     main_window.show()
-    admin_window.show()
+    presenter_window.show()
     app.exec()
