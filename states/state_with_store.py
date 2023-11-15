@@ -25,12 +25,12 @@ def init_all_states():
     from states.pause_state import PauseState
     from states.player_answer_state import PlayerAnswerState
     from states.run_state import RunState
-    from states.stop_state import StopState
+    from states.lobby_state import LobbyState
     global _STATES
 
     _STATES = {
         StatusEnum.PAUSE: PauseState,
         StatusEnum.PLAYER_ANSWER: PlayerAnswerState,
         StatusEnum.RUN: RunState,
-        StatusEnum.STOP: StopState,
+        StatusEnum.LOBBY: LobbyState,
     }

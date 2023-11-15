@@ -27,7 +27,7 @@ class CentralWidget(QLabel):
         self.game.on_change_state.connect(self._change_status_handler)
         self.question_timer.on_tick.connect(self._on_question_timer_tick)
 
-        self.setText("Нажмите начать")
+        self.setText("Нажмите start для подключения")
 
     def _change_status_handler(self, args: OnChangeStateSignalArgs):
         match args.new_state.status:
@@ -37,8 +37,8 @@ class CentralWidget(QLabel):
                 self.game.active_player.on_change_name.connect(self._on_change_active_player_name_handler)
                 self.game.on_change_active_player.connect(self._unsubscribe_on_change_active_player)
                 self.setText(self.game.active_player.name)
-            case StatusEnum.STOP:
-                self.setText("Нажмите начать")
+            case StatusEnum.LOBBY:
+                self.setText("Нажмите start для подключения")
             case StatusEnum.RUN:
                 self.setText(str(int(self.question_timer.get_rest())))
 

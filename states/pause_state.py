@@ -10,6 +10,3 @@ class PauseState(StateWithStore):
 
     def on_click_play(self):
         self._set_next_state(StatusEnum.RUN)
-
-    def on_click_reset(self):
-        self._set_next_state(StatusEnum.STOP)
