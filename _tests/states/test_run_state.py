@@ -16,7 +16,7 @@ def test_start_timer_on_enter(qtbot, mocked_store):
     qtbot.wait(200)
     second_time = mocked_store.question_timer.get_rest()
 
-    assert first_time != second_time, "Timer is paused"
+    assert second_time < first_time, "Timer is paused"
 
 
 def test_click_to_play(mocked_store):
