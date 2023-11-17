@@ -1,3 +1,4 @@
+from animations.start_game_animation import StartGameAnimation
 from enums.joystick_button_enum import JoystickButton
 from enums.status_enum import StatusEnum
 from helpers.player_generator import PlayerGenerator
@@ -31,3 +32,6 @@ class LobbyState(StateWithStore):
                 self.store.player.add_player(
                     player=self._player_generator.get_new_player(joystick_id=args.joystick_id)
                 )
+
+    def on_click_play(self):
+        self._set_next_state_after_animation(StatusEnum.CHOICE_QUESTION, StartGameAnimation())
