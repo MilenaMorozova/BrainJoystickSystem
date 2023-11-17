@@ -41,6 +41,10 @@ class CentralWidget(QLabel):
                 self.setText("Нажмите start для подключения")
             case StatusEnum.RUN:
                 self.setText(str(int(self.question_timer.get_rest())))
+            case StatusEnum.CHOICE_QUESTION:
+                self.setText("Выбор вопроса")
+            case StatusEnum.WAIT_ANIMATION:
+                self.setText("Анимация")
 
     def _unsubscribe_on_change_active_player(self, args: OnChangeActivePlayerSignalArgs):
         args.old_player.on_change_name.disconnect(self._on_change_active_player_name_handler)
