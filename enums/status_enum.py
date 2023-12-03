@@ -6,5 +6,5 @@ class StatusEnum(IntEnum):
     PAUSE = 1
     RUN = 2
     PLAYER_ANSWER = 3
-    WAIT_ANIMATION = 4
+    ANIMATION = 4
     CHOICE_QUESTION = 5

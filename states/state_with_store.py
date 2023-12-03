@@ -27,7 +27,7 @@ class StateWithStore(BaseState):
         self.store.game.state = state_type()
 
     def _set_next_state_after_animation(self, status: StatusEnum, animation: Animation):
-        self._set_next_state(StatusEnum.WAIT_ANIMATION)
+        self._set_next_state(StatusEnum.ANIMATION)
         self.__status_after_animation = status
         animation.on_end.connect(self.on_end_animation)
         animation.start()
@@ -43,7 +43,7 @@ def init_all_states():
     from states.player_answer_state import PlayerAnswerState
     from states.run_state import RunState
     from states.lobby_state import LobbyState
-    from states.wait_animation_state import WaitAnimationState
+    from states.animation_state import AnimationState
     from states.choice_question_state import ChoiceQuestionState
     global _STATES
 
@@ -52,6 +52,6 @@ def init_all_states():
         StatusEnum.PLAYER_ANSWER: PlayerAnswerState,
         StatusEnum.RUN: RunState,
         StatusEnum.LOBBY: LobbyState,
-        StatusEnum.WAIT_ANIMATION: WaitAnimationState,
+        StatusEnum.ANIMATION: AnimationState,
         StatusEnum.CHOICE_QUESTION: ChoiceQuestionState,
     }

@@ -34,7 +34,7 @@ class ButtonsPanel:
             case StatusEnum.LOBBY:
                 self.play_button.setText("Начать")
                 self.play_button.show()
-            case StatusEnum.WAIT_ANIMATION:
+            case StatusEnum.ANIMATION:
                 self.play_button.hide()
             case StatusEnum.CHOICE_QUESTION:
                 self.play_button.hide()

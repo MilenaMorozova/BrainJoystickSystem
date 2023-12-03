@@ -43,7 +43,7 @@ class CentralWidget(QLabel):
                 self.setText(str(int(self.question_timer.get_rest())))
             case StatusEnum.CHOICE_QUESTION:
                 self.setText("Выбор вопроса")
-            case StatusEnum.WAIT_ANIMATION:
+            case StatusEnum.ANIMATION:
                 self.setText("Анимация")
 
     def _unsubscribe_on_change_active_player(self, args: OnChangeActivePlayerSignalArgs):

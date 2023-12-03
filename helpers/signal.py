@@ -3,6 +3,10 @@ from typing import Set, Callable
 
 
 class Signal:
+    """
+    Temp class for solving problem with signals in animations
+    """
+
     def __init__(self):
         self._listeners: Set[Callable] = set()
 
