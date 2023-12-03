@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package name="test_name" version="4" id="test_id" restriction="18+" date="01.01.2023"
+    xmlns="http://vladimirkhil.com/ygpackage3.0.xsd">
+    <tags>
+        <tag>tag1 tag2</tag>
+    </tags>
+    <info>
+        <authors>
+            <author>Abr1koZ</author>
+        </authors>
+    </info>
+    <rounds>
+        <round name="round1">
+            <themes>
+                <theme name="theme1">
+                    <questions>
+                        <question price="100">
+                            <scenario>
+                                <atom>text1</atom>
+                                <atom type="image">path1</atom>
+                                <atom type="marker"></atom>
+                                <atom type="image">path2</atom>
+                            </scenario>
+                            <right>
+                                <answer>answer1</answer>
+                            </right>
+                        </question>
+                    </questions>
+                </theme>
+            </themes>
+        </round>
+        <round name="round2" type="final">
+            <themes>
+                <theme name="theme2">
+                    <questions>
+                        <question price="0">
+                            <scenario>
+                                <atom>text2</atom>
+                                <atom type="video">path3</atom>
+                            </scenario>
+                            <right>
+                                <answer>answer2</answer>
+                            </right>
+                        </question>
+                    </questions>
+                </theme>
+            </themes>
+        </round>
+    </rounds>
+</package>
