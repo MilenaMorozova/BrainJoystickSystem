@@ -13,3 +13,12 @@ class Theme:
 
     def __repr__(self):
         return str(self)
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Theme):
+            return False
+
+        return (
+                self.name == other.name and
+                self.questions == other.questions
+        )

@@ -14,3 +14,9 @@ class QuestionStep:
 
     def __repr__(self):
         return str(self)
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, QuestionStep):
+            return False
+
+        return self.content == other.content

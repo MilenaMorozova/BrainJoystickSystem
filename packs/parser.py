@@ -87,5 +87,5 @@ class Parser:
             steps_before=before,
             steps_after=after,
             answer=self.find(item, 'answer').text,
-            price=item.get('price', 0)
+            price=int(item.get('price', '0'))
         )

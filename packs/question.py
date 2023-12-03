@@ -15,3 +15,14 @@ class Question:
 
     def __repr__(self):
         return str(self)
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Question):
+            return False
+
+        return (
+                self.steps_before == other.steps_before and
+                self.steps_after == other.steps_after and
+                self.answer == other.answer and
+                self.price == other.price
+        )

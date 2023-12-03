@@ -18,3 +18,15 @@ class Pack:
 
     def __repr__(self):
         return str(self)
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Pack):
+            return False
+
+        return (
+                self.name == other.name and
+                self.version == other.version and
+                self.restriction == other.restriction and
+                self.tags == other.tags and
+                self.rounds == other.rounds
+        )
