@@ -12,6 +12,3 @@ class BaseState:
 
     def on_click_play(self):
         pass
-
-    def on_click_reset(self):
-        pass

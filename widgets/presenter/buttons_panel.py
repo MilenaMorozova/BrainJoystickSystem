@@ -29,27 +29,17 @@ class ButtonsPanel:
         self.play_button.move(20, 20)
         self.play_button.clicked.connect(self._on_click_play_handler)
 
-        self.reset_button = QPushButton("Сбросить", parent)
-        self.reset_button.setStyleSheet(BUTTON_CSS)
-        self.reset_button.clicked.connect(self. _on_click_reset_handler)
-
-        parent.on_resize.connect(lambda args: self.update())
-        self.update()
-
     def _change_status_handler(self, args: OnChangeStateSignalArgs):
         match args.new_state.status:
             case StatusEnum.LOBBY:
                 self.play_button.setText("Начать")
-            case StatusEnum.RUN:
-                self.play_button.setText("Пауза")
-            case StatusEnum.PAUSE:
-                self.play_button.setText("Продолжить")
-
-    def update(self):
-        self.reset_button.move(self.parent.width() - 220, 20)
+                self.play_button.show()
+            case StatusEnum.ANIMATION:
+                self.play_button.hide()
+            case StatusEnum.CHOICE_QUESTION:
+                self.play_button.hide()
+            case _:
+                raise Exception(f"Unhandled case status = {args.new_state.status.name}")
 
     def _on_click_play_handler(self):
         self._game.state.on_click_play()
-
-    def _on_click_reset_handler(self):
-        self._game.state.on_click_reset()
