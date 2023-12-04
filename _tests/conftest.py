@@ -1,8 +1,11 @@
+from unittest.mock import MagicMock
+
 import pytest
 from pathlib import Path
 
+from enums.status_enum import StatusEnum
 from settings import TEST_RESOURCES_PATH
-from states.state_with_store import init_all_states
+from states.state_with_store import init_all_states, _STATES
 from stores.store import Store
 
 
@@ -17,6 +20,13 @@ def mocked_store() -> Store:
     Store._instance = mock
 
     return mock
+
+
+@pytest.fixture()
+def mocked_status() -> int:
+    StatusEnum.MOCK = -1
+    _STATES[StatusEnum.MOCK] = MagicMock
+    return StatusEnum.MOCK
 
 
 def _get_filepath(request) -> str:

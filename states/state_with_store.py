@@ -29,11 +29,11 @@ class StateWithStore(BaseState):
     def _set_next_state_after_animation(self, status: StatusEnum, animation: Animation):
         self._set_next_state(StatusEnum.ANIMATION)
         self.__status_after_animation = status
-        animation.on_end.connect(self.on_end_animation)
+        animation.on_end.connect(self._on_end_animation)
         animation.start()
 
-    def on_end_animation(self, args: OnEndAnimationSignalArgs):
-        args.sender.on_end.disconnect(self.on_end_animation)
+    def _on_end_animation(self, args: OnEndAnimationSignalArgs):
+        args.sender.on_end.disconnect(self._on_end_animation)
         self._set_next_state(self.__status_after_animation)
         self.__status_after_animation = None
 
@@ -47,11 +47,11 @@ def init_all_states():
     from states.choice_question_state import ChoiceQuestionState
     global _STATES
 
-    _STATES = {
+    _STATES.update({
         StatusEnum.PAUSE: PauseState,
         StatusEnum.PLAYER_ANSWER: PlayerAnswerState,
         StatusEnum.RUN: RunState,
         StatusEnum.LOBBY: LobbyState,
         StatusEnum.ANIMATION: AnimationState,
         StatusEnum.CHOICE_QUESTION: ChoiceQuestionState,
-    }
+    })
