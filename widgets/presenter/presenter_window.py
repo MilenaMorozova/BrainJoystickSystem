@@ -5,8 +5,7 @@ from PyQt6.QtCore import QSize, pyqtSignal
 from PyQt6.QtWidgets import QWidget
 
 from helpers.signals import OnResizeSignalArgs
-from widgets.presenter.play_button import PlayButton
-from widgets.presenter.select_pack_button import SelectPackButton
+from widgets.presenter.lobby_presenter_widget import LobbyPresenterWidget
 
 
 class PresenterWindow(QWidget):
@@ -19,11 +18,7 @@ class PresenterWindow(QWidget):
 
         self.setWindowTitle("Окно ведущего")
 
-        self.play_button = PlayButton(self)
-        self.play_button.move(20, 20)
-
-        self.select_pack_button = SelectPackButton(self)
-        self.select_pack_button.move(20, 20)
+        self.lobby_presenter_widget = LobbyPresenterWidget(self)
 
     def resizeEvent(self, a0: typing.Optional[QtGui.QResizeEvent]) -> None:
         self.on_resize.emit(OnResizeSignalArgs(sender=self))
