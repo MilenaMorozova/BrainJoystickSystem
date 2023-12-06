@@ -22,10 +22,6 @@ class LobbyPresenterWidget(QWidget):
         self.game_store.on_change_pack.connect(self.update_buttons)
         self.game_store.on_change_state.connect(self.update_buttons)
 
-    def __del__(self):
-        self.game_store.on_change_pack.connect(self.update_buttons)
-        self.game_store.on_change_state.connect(self.update_buttons)
-
     def update_buttons(self, *args, **kwargs):
         if self.game_store.state.status == StatusEnum.LOBBY and self.game_store.pack is not None:
             self.play_button.show()
