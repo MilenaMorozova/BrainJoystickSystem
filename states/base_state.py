@@ -9,6 +9,3 @@ class BaseState:
 
     def on_exit(self):
         pass
-
-    def on_click_play(self):
-        pass

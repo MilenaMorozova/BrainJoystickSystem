@@ -4,6 +4,7 @@ from typing import Optional
 from PyQt6.QtCore import QObject, pyqtSignal
 
 from helpers.signals import SignalArgs
+from packs.pack import Pack
 from player import Player
 from states.base_state import BaseState
 
@@ -20,14 +21,22 @@ class OnChangeStateSignalArgs(SignalArgs):
     old_state: BaseState
 
 
+@dataclass
+class OnChangePackSignalArgs(SignalArgs):
+    new: Optional[Pack]
+    old: Optional[Pack]
+
+
 class GameStore(QObject):
     on_change_active_player = pyqtSignal(OnChangeActivePlayerSignalArgs)
     on_change_state = pyqtSignal(OnChangeStateSignalArgs)
+    on_change_pack = pyqtSignal(OnChangePackSignalArgs)
 
     def __init__(self):
         super().__init__()
         self._active_player: Optional[Player] = None
         self._state: Optional[BaseState] = None
+        self._pack: Optional[Pack] = None
 
     @property
     def active_player(self) -> Optional[Player]:
@@ -63,4 +72,16 @@ class GameStore(QObject):
         value.on_enter()
         self.on_change_state.emit(
             OnChangeStateSignalArgs(sender=self, old_state=old_state, new_state=value)
+        )
+
+    @property
+    def pack(self) -> Optional[Pack]:
+        return self._pack
+
+    @pack.setter
+    def pack(self, value: Optional[Pack]):
+        old_pack = self._pack
+        self._pack = value
+        self.on_change_pack.emit(
+            OnChangePackSignalArgs(sender=self, old=old_pack, new=value)
         )
