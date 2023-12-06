@@ -4,9 +4,8 @@ from PyQt6 import QtGui
 from PyQt6.QtCore import QPropertyAnimation, QSize, pyqtProperty
 from PyQt6.QtWidgets import QPushButton, QGridLayout, QWidget, QSizePolicy
 
-from packs.parser import Parser
 from packs.question import Question
-
+from stores.store import Store
 
 SELECT_QUESTION_GRID_CELL_CSS = """
     font-size: 26px;
@@ -28,27 +27,16 @@ class QuestionButton(SelectQuestionGridCell):
         super().__init__(str(question.price))
 
 
-parser = Parser(r'C:\Users\masht\Downloads\Ночные посиделки №47.siq')
-parser.load()
-pack = parser.get_pack()
-
-
 class SelectQuestionWidget(QWidget):
     def __init__(self):
         super().__init__()
-        # TODO swap to store.game.pack
-        self.pack = pack
-        r = self.pack.rounds[0]
+        self.game_store = Store.get().game
 
         self.grid_widget = QWidget(self)
         self.grid = QGridLayout(self.grid_widget)
 
-        for y, theme in enumerate(r.themes):
-            theme_name_button = SelectQuestionGridCell(theme.name)
-            self.grid.addWidget(theme_name_button, y, 0, 1, 3)
-            for x, question in enumerate(theme.questions, 3):
-                question_button = QuestionButton(question)
-                self.grid.addWidget(question_button, y, x)
+        self.game_store.on_change_pack.connect(self.update_questions)
+        self.game_store.on_change_round_number.connect(self.update_questions)
 
     def resizeEvent(self, a0: typing.Optional[QtGui.QResizeEvent]) -> None:
         self.grid_size = self.size()
@@ -71,3 +59,11 @@ class SelectQuestionWidget(QWidget):
         grid_growing.setEndValue(self.size())
         grid_growing.setDuration(3000)
         return grid_growing
+
+    def update_questions(self, *args, **kwargs):
+        for y, theme in enumerate(self.game_store.round.themes):
+            theme_name_button = SelectQuestionGridCell(theme.name)
+            self.grid.addWidget(theme_name_button, y, 0, 1, 3)
+            for x, question in enumerate(theme.questions, 3):
+                question_button = QuestionButton(question)
+                self.grid.addWidget(question_button, y, x)
