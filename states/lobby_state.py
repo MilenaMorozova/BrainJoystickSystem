@@ -1,3 +1,5 @@
+from typing import Optional
+
 from animations.start_game_animation import StartGameAnimation
 from enums.joystick_button_enum import JoystickButton
 from enums.status_enum import StatusEnum
@@ -12,6 +14,7 @@ class LobbyState(StateWithStore):
     def __init__(self):
         super().__init__()
         self._player_generator = PlayerGenerator(self.store.player)
+        self._start_game_animation: Optional[StartGameAnimation] = None
 
     def on_enter(self):
         self.store.input.on_player_click.connect(self._on_player_click_handler)
@@ -34,4 +37,5 @@ class LobbyState(StateWithStore):
                 )
 
     def on_click_play(self):
-        self._set_next_state_after_animation(StatusEnum.CHOICE_QUESTION, StartGameAnimation())
+        self._start_game_animation = StartGameAnimation()
+        self._set_next_state_after_animation(StatusEnum.CHOICE_QUESTION, self._start_game_animation)
