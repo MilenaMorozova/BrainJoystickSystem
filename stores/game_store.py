@@ -5,6 +5,7 @@ from PyQt6.QtCore import QObject, pyqtSignal
 
 from helpers.signals import SignalArgs
 from packs.pack import Pack
+from packs.round import Round
 from player import Player
 from states.base_state import BaseState
 
@@ -27,16 +28,24 @@ class OnChangePackSignalArgs(SignalArgs):
     old: Optional[Pack]
 
 
+@dataclass
+class OnChangeRoundNumberSignalArgs(SignalArgs):
+    new: int
+    old: int
+
+
 class GameStore(QObject):
     on_change_active_player = pyqtSignal(OnChangeActivePlayerSignalArgs)
     on_change_state = pyqtSignal(OnChangeStateSignalArgs)
     on_change_pack = pyqtSignal(OnChangePackSignalArgs)
+    on_change_round_number = pyqtSignal(OnChangeRoundNumberSignalArgs)
 
     def __init__(self):
         super().__init__()
         self._active_player: Optional[Player] = None
         self._state: Optional[BaseState] = None
         self._pack: Optional[Pack] = None
+        self._round_number = 0
 
     @property
     def active_player(self) -> Optional[Player]:
@@ -85,3 +94,19 @@ class GameStore(QObject):
         self.on_change_pack.emit(
             OnChangePackSignalArgs(sender=self, old=old_pack, new=value)
         )
+
+    @property
+    def round_number(self) -> int:
+        return self._round_number
+
+    @round_number.setter
+    def round_number(self, value: int):
+        old = self._round_number
+        self._round_number = value
+        self.on_change_round_number.emit(
+            OnChangeRoundNumberSignalArgs(sender=self, old=old, new=value)
+        )
+
+    @property
+    def round(self) -> Round:
+        return self.pack.rounds[self._round_number]

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from typing import Optional
 
-from PyQt6.QtCore import QObject, QAbstractAnimation
+from PyQt6.QtCore import QObject
 
 from helpers.signal import Signal
 from helpers.signals import SignalArgs
+from widgets.main_window import MainWindow
 
 
 @dataclass
@@ -16,11 +16,10 @@ class Animation(QObject):
     def __init__(self):
         super().__init__()
         self.on_end = Signal()
-        self.main_animation: Optional[QAbstractAnimation] = None
+        self.main_window = MainWindow.get()
 
     def start(self):
-        self.main_animation.finished.connect(self._emit_on_end)
-        self.main_animation.start()
+        raise NotImplemented
 
     def _emit_on_end(self):
         self.on_end.emit(OnEndAnimationSignalArgs(self))

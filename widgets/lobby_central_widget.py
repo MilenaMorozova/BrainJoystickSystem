@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtProperty, QPropertyAnimation
 from PyQt6.QtWidgets import QLabel
 
 from enums.status_enum import StatusEnum
@@ -9,15 +9,16 @@ from stores.store import Store
 
 STYLE = """
     color: #FFFFFF;
-    font-size: 64px;
+    font-size: {font_size}px;
 """
 
 
-class CentralWidget(QLabel):
+class LobbyCentralWidget(QLabel):
     def __init__(self):
         super().__init__()
+        self._font_size = 64
+        self._update_style()
 
-        self.setStyleSheet(STYLE)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         store = Store.get()
@@ -29,7 +30,11 @@ class CentralWidget(QLabel):
 
         self.setText("Нажмите start для подключения")
 
+    def _update_style(self):
+        self.setStyleSheet(STYLE.format(font_size=self._font_size))
+
     def _change_status_handler(self, args: OnChangeStateSignalArgs):
+        # TODO delete this logic
         match args.new_state.status:
             case StatusEnum.PAUSE:
                 self.setText("Пауза")
@@ -43,8 +48,6 @@ class CentralWidget(QLabel):
                 self.setText(str(int(self.question_timer.get_rest())))
             case StatusEnum.CHOICE_QUESTION:
                 self.setText("Выбор вопроса")
-            case StatusEnum.ANIMATION:
-                self.setText("Анимация")
 
     def _unsubscribe_on_change_active_player(self, args: OnChangeActivePlayerSignalArgs):
         args.old_player.on_change_name.disconnect(self._on_change_active_player_name_handler)
@@ -55,3 +58,18 @@ class CentralWidget(QLabel):
 
     def _on_change_active_player_name_handler(self, args: OnChangeNameSignalArgs):
         self.setText(args.new_name)
+
+    @pyqtProperty(int)
+    def font_size(self) -> int:
+        return self._font_size
+
+    @font_size.setter
+    def font_size(self, value: int):
+        self._font_size = value
+        self._update_style()
+
+    def get_text_reduction_animation(self) -> QPropertyAnimation:
+        text_reduction = QPropertyAnimation(self, b'font_size', self)
+        text_reduction.setEndValue(0)
+        text_reduction.setDuration(1000)
+        return text_reduction
