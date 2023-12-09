@@ -1,7 +1,7 @@
 import typing
 
 from PyQt6 import QtGui
-from PyQt6.QtCore import QPropertyAnimation, QSize, pyqtProperty
+from PyQt6.QtCore import QPropertyAnimation, QSize, pyqtProperty, QParallelAnimationGroup, QPoint
 from PyQt6.QtWidgets import QPushButton, QGridLayout, QWidget, QSizePolicy
 
 from packs.question import Question
@@ -14,6 +14,8 @@ SELECT_QUESTION_GRID_CELL_CSS = """
     background-color: #0097F5;
 """
 
+BIG_QUESTION_MARGIN = (10, 10)
+
 
 class SelectQuestionGridCell(QPushButton):
     def __init__(self, text: str):
@@ -25,6 +27,49 @@ class SelectQuestionGridCell(QPushButton):
 class QuestionButton(SelectQuestionGridCell):
     def __init__(self, question: Question):
         super().__init__(str(question.price))
+        self.question = question
+        self.clicked.connect(self.click_handler)
+        self.store = Store.get()
+
+    def click_handler(self):
+        self.store.game.state.select_question(self.question)
+
+    def get_growing_animation(self) -> QParallelAnimationGroup:
+        duration = 1000
+        shift = (BIG_QUESTION_MARGIN[0] // 2, BIG_QUESTION_MARGIN[1] // 2)
+
+        growing = QPropertyAnimation(self, b'size', self)
+        growing.setEndValue(self.parent().size() - QSize(*BIG_QUESTION_MARGIN))
+        growing.setDuration(duration)
+
+        moving = QPropertyAnimation(self, b'pos', self)
+        moving.setEndValue(self.parent().pos() + QPoint(*shift))
+        moving.setDuration(duration)
+
+        animation_group = QParallelAnimationGroup(self)
+        animation_group.addAnimation(growing)
+        animation_group.addAnimation(moving)
+
+        return animation_group
+
+    def get_collapse_animation(self) -> QParallelAnimationGroup:
+        duration = 300
+        end_size = self.size() - QSize(self.width(), 0)
+        shift = QPoint(self.width() // 2, 0)
+
+        collapse = QPropertyAnimation(self, b'size', self)
+        collapse.setEndValue(end_size)
+        collapse.setDuration(duration)
+
+        moving = QPropertyAnimation(self, b'pos', self)
+        moving.setEndValue(self.pos() + shift)
+        moving.setDuration(duration)
+
+        animation_group = QParallelAnimationGroup(self)
+        animation_group.addAnimation(collapse)
+        animation_group.addAnimation(moving)
+
+        return animation_group
 
 
 class SelectQuestionWidget(QWidget):
@@ -34,6 +79,7 @@ class SelectQuestionWidget(QWidget):
 
         self.grid_widget = QWidget(self)
         self.grid = QGridLayout(self.grid_widget)
+        self.questions_widgets: list[QuestionButton] = []
 
         self.game_store.on_change_pack.connect(self.update_questions)
         self.game_store.on_change_round_number.connect(self.update_questions)
@@ -61,9 +107,16 @@ class SelectQuestionWidget(QWidget):
         return grid_growing
 
     def update_questions(self, *args, **kwargs):
+        self.questions_widgets = []
         for y, theme in enumerate(self.game_store.round.themes):
             theme_name_button = SelectQuestionGridCell(theme.name)
             self.grid.addWidget(theme_name_button, y, 0, 1, 3)
             for x, question in enumerate(theme.questions, 3):
                 question_button = QuestionButton(question)
                 self.grid.addWidget(question_button, y, x)
+                self.questions_widgets.append(question_button)
+
+    def get_cell_by_question(self, question: Question) -> QuestionButton:
+        for widget in self.questions_widgets:
+            if widget.question == question:
+                return widget

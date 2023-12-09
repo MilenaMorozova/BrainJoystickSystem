@@ -5,6 +5,7 @@ from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 
 from helpers.signals import OnResizeSignalArgs
+from widgets.answer_to_question_widget import AnswerToQuestionWidget
 from widgets.lobby_central_widget import LobbyCentralWidget
 from widgets.players_container import PlayersContainer
 from widgets.select_question_widget import SelectQuestionWidget
@@ -28,7 +29,10 @@ class MainWindow(QMainWindow):
 
         self.lobby_central_widget = LobbyCentralWidget()
         self.select_question_widget = SelectQuestionWidget()
+        self.answer_to_question_widget = AnswerToQuestionWidget()
+
         self.select_question_widget.hide()
+        self.answer_to_question_widget.hide()
 
         self.players_container = PlayersContainer()
 
@@ -36,8 +40,10 @@ class MainWindow(QMainWindow):
         self.main_container.setContentsMargins(0, 0, 0, 0)
         self.main_container.setSpacing(0)
 
-        self.main_container.addWidget(self.select_question_widget, 1)
         self.main_container.addWidget(self.lobby_central_widget, 1)
+        self.main_container.addWidget(self.select_question_widget, 1)
+        self.main_container.addWidget(self.answer_to_question_widget, 1)
+
         self.main_container.addLayout(self.players_container)
 
         self.main_widget.setLayout(self.main_container)

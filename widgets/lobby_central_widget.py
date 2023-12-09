@@ -1,10 +1,9 @@
 from PyQt6.QtCore import Qt, pyqtProperty, QPropertyAnimation
 from PyQt6.QtWidgets import QLabel
 
-from enums.status_enum import StatusEnum
 from player import OnChangeNameSignalArgs
 from helpers.timer import OnTickSignalArgs
-from stores.game_store import OnChangeStateSignalArgs, OnChangeActivePlayerSignalArgs
+from stores.game_store import OnChangeActivePlayerSignalArgs
 from stores.store import Store
 
 STYLE = """
@@ -25,29 +24,12 @@ class LobbyCentralWidget(QLabel):
         self.game = store.game
         self.question_timer = store.question_timer
 
-        self.game.on_change_state.connect(self._change_status_handler)
         self.question_timer.on_tick.connect(self._on_question_timer_tick)
 
         self.setText("Нажмите start для подключения")
 
     def _update_style(self):
         self.setStyleSheet(STYLE.format(font_size=self._font_size))
-
-    def _change_status_handler(self, args: OnChangeStateSignalArgs):
-        # TODO delete this logic
-        match args.new_state.status:
-            case StatusEnum.PAUSE:
-                self.setText("Пауза")
-            case StatusEnum.PLAYER_ANSWER:
-                self.game.active_player.on_change_name.connect(self._on_change_active_player_name_handler)
-                self.game.on_change_active_player.connect(self._unsubscribe_on_change_active_player)
-                self.setText(self.game.active_player.name)
-            case StatusEnum.LOBBY:
-                self.setText("Нажмите start для подключения")
-            case StatusEnum.RUN:
-                self.setText(str(int(self.question_timer.get_rest())))
-            case StatusEnum.CHOICE_QUESTION:
-                self.setText("Выбор вопроса")
 
     def _unsubscribe_on_change_active_player(self, args: OnChangeActivePlayerSignalArgs):
         args.old_player.on_change_name.disconnect(self._on_change_active_player_name_handler)
