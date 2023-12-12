@@ -4,6 +4,7 @@ from PyQt6 import QtGui
 from PyQt6.QtCore import QPropertyAnimation, QSize, pyqtProperty, QParallelAnimationGroup, QPoint
 from PyQt6.QtWidgets import QPushButton, QGridLayout, QWidget, QSizePolicy
 
+from enums.status_enum import StatusEnum
 from packs.question import Question
 from stores.store import Store
 
@@ -32,7 +33,8 @@ class QuestionButton(SelectQuestionGridCell):
         self.store = Store.get()
 
     def click_handler(self):
-        self.store.game.state.select_question(self.question)
+        if self.store.game.state.status == StatusEnum.CHOICE_QUESTION:
+            self.store.game.state.select_question(self.question)
 
     def get_growing_animation(self) -> QParallelAnimationGroup:
         duration = 1000
@@ -118,5 +120,5 @@ class SelectQuestionWidget(QWidget):
 
     def get_cell_by_question(self, question: Question) -> QuestionButton:
         for widget in self.questions_widgets:
-            if widget.question == question:
+            if widget.question is question:
                 return widget
