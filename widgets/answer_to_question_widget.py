@@ -124,17 +124,17 @@ class AnswerToQuestionWidget(QPushButton):
 
         return animation_group
 
-    def get_last_not_image_step(self, steps: List[QuestionStep]) -> Optional[QuestionStep]:
-        not_image_steps = [i for i in steps if not isinstance(i, TextStep)]
-        if not_image_steps:
-            return not_image_steps[-1]
+    def get_last_not_text_step(self, steps: List[QuestionStep]) -> Optional[QuestionStep]:
+        not_text_steps = [i for i in steps if not isinstance(i, TextStep)]
+        if not_text_steps:
+            return not_text_steps[-1]
 
     def get_show_question_animation(self, question: Question) -> QSequentialAnimationGroup:
         animation_group = QSequentialAnimationGroup(self)
-        last_not_image_step = self.get_last_not_image_step(question.steps_before)
+        last_not_text_step = self.get_last_not_text_step(question.steps_before)
 
         for i, step in enumerate(question.steps_before):
-            is_last_not_text_step = step is last_not_image_step
+            is_last_not_text_step = step is last_not_text_step
             step_animation = None
 
             if isinstance(step, TextStep):
