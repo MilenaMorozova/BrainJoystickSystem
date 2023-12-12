@@ -1,3 +1,4 @@
+from threading import Thread
 from typing import Optional
 
 from animations.start_game_animation import StartGameAnimation
@@ -5,6 +6,7 @@ from enums.joystick_button_enum import JoystickButton
 from enums.status_enum import StatusEnum
 from helpers.player_generator import PlayerGenerator
 from joystick_input import OnPlayerClickSignalArgs, OnUnknownPlayerClickSignalArgs
+from packs.parser import Parser
 from states.state_with_store import StateWithStore
 
 
@@ -23,6 +25,15 @@ class LobbyState(StateWithStore):
     def on_exit(self):
         self.store.input.on_player_click.disconnect(self._on_player_click_handler)
         self.store.input.on_unknown_player_click.disconnect(self._on_unknown_player_click_handler)
+
+    def load_pack_async(self, path: str):
+        def func():
+            parser = Parser(path)
+            parser.load()
+            self.store.game.pack = parser.get_pack()
+
+        thread = Thread(target=func)
+        thread.start()
 
     def _on_player_click_handler(self, args: OnPlayerClickSignalArgs):
         match args.key:

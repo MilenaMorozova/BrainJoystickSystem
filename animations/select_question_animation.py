@@ -1,0 +1,31 @@
+from animations.animation import Animation
+from packs.question import Question
+
+
+class SelectQuestionAnimation(Animation):
+    def __init__(self, question: Question):
+        super().__init__()
+        self.question = question
+        self.selected_question_collapse_animation = None
+        self.expand_animation = None
+
+        self.selected_question_cell = self.main_window.select_question_widget.get_cell_by_question(self.question)
+        self.selected_question_growing_animation = self.selected_question_cell.get_growing_animation()
+
+    def start_expand_animation(self):
+        self.main_window.select_question_widget.hide()
+        self.main_window.answer_to_question_widget.show()
+
+        self.expand_animation = self.main_window.answer_to_question_widget.get_expand_animation()
+        self.expand_animation.finished.connect(self._emit_on_end)
+        self.expand_animation.start()
+
+    def start_collapse_animation(self):
+        self.selected_question_collapse_animation = self.selected_question_cell.get_collapse_animation()
+        self.selected_question_collapse_animation.finished.connect(self.start_expand_animation)
+        self.selected_question_collapse_animation.start()
+
+    def start(self):
+        self.selected_question_cell.raise_()
+        self.selected_question_growing_animation.finished.connect(self.start_collapse_animation)
+        self.selected_question_growing_animation.start()
