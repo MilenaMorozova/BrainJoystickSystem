@@ -73,7 +73,7 @@ class AnswerToQuestionWidget(QPushButton):
 
         return animation_group
 
-    def get_image_step_animation(self, step: ImageStep, is_last: bool) -> SequentialAnimationGroupWithStarted:
+    def get_image_step_animation(self, step: ImageStep) -> SequentialAnimationGroupWithStarted:
         # TODO: create another animation for image step
         def on_start():
             self.content_label.setText(f'Image {step.content}')
@@ -84,13 +84,11 @@ class AnswerToQuestionWidget(QPushButton):
 
         pause_animation = QPauseAnimation(self)
         pause_animation.setDuration(5000)
-        if not is_last:
-            pause_animation.finished.connect(lambda: self.content_label.hide())
         animation_group.addAnimation(pause_animation)
 
         return animation_group
 
-    def get_video_step_animation(self, step: VideoStep, is_last: bool) -> SequentialAnimationGroupWithStarted:
+    def get_video_step_animation(self, step: VideoStep) -> SequentialAnimationGroupWithStarted:
         # TODO: create another animation for step
         def on_start():
             self.content_label.setText(f'Video {step.content}')
@@ -101,13 +99,11 @@ class AnswerToQuestionWidget(QPushButton):
 
         pause_animation = QPauseAnimation(self)
         pause_animation.setDuration(5000)
-        if not is_last:
-            pause_animation.finished.connect(lambda: self.content_label.hide())
         animation_group.addAnimation(pause_animation)
 
         return animation_group
 
-    def get_audio_step_animation(self, step: AudioStep, is_last: bool) -> SequentialAnimationGroupWithStarted:
+    def get_audio_step_animation(self, step: AudioStep) -> SequentialAnimationGroupWithStarted:
         # TODO: create another animation for step
         def on_start():
             self.content_label.setText(f'Audio {step.content}')
@@ -118,33 +114,24 @@ class AnswerToQuestionWidget(QPushButton):
 
         pause_animation = QPauseAnimation(self)
         pause_animation.setDuration(5000)
-        if not is_last:
-            pause_animation.finished.connect(lambda: self.content_label.hide())
         animation_group.addAnimation(pause_animation)
 
         return animation_group
 
-    def get_last_not_text_step(self, steps: List[QuestionStep]) -> Optional[QuestionStep]:
-        not_text_steps = [i for i in steps if not isinstance(i, TextStep)]
-        if not_text_steps:
-            return not_text_steps[-1]
-
     def get_show_question_animation(self, question: Question) -> QSequentialAnimationGroup:
         animation_group = QSequentialAnimationGroup(self)
-        last_not_text_step = self.get_last_not_text_step(question.steps_before)
 
         for i, step in enumerate(question.steps_before):
-            is_last_not_text_step = step is last_not_text_step
             step_animation = None
 
             if isinstance(step, TextStep):
                 step_animation = self.get_text_step_animation(step)
             elif isinstance(step, ImageStep):
-                step_animation = self.get_image_step_animation(step, is_last_not_text_step)
+                step_animation = self.get_image_step_animation(step)
             elif isinstance(step, VideoStep):
-                step_animation = self.get_video_step_animation(step, is_last_not_text_step)
+                step_animation = self.get_video_step_animation(step)
             elif isinstance(step, AudioStep):
-                step_animation = self.get_audio_step_animation(step, is_last_not_text_step)
+                step_animation = self.get_audio_step_animation(step)
 
             if step_animation:
                 animation_group.addAnimation(step_animation)
