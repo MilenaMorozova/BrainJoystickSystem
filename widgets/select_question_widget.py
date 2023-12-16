@@ -26,11 +26,13 @@ class SelectQuestionGridCell(QPushButton):
 
 
 class QuestionButton(SelectQuestionGridCell):
-    def __init__(self, question: Question):
-        super().__init__(str(question.price))
+    def __init__(self, question: typing.Optional[Question]):
         self.question = question
-        self.clicked.connect(self.click_handler)
         self.locator = ServiceLocator.get()
+
+        if question:
+            super().__init__(str(question.price))
+            self.clicked.connect(self.click_handler)
 
     def click_handler(self):
         if self.locator.game.state.status == StatusEnum.CHOICE_QUESTION:

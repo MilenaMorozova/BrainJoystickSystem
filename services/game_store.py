@@ -1,10 +1,11 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List
 
 from PyQt6.QtCore import QObject, pyqtSignal
 
 from helpers.signals import SignalArgs
 from packs.pack import Pack
+from packs.question import Question
 from packs.round import Round
 from player import Player
 from states.base_state import BaseState
@@ -34,11 +35,17 @@ class OnChangeRoundNumberSignalArgs(SignalArgs):
     old: int
 
 
+@dataclass
+class OnChangeSelectedQuestionSignalArgs(SignalArgs):
+    question: Question
+
+
 class GameStore(QObject):
     on_change_active_player = pyqtSignal(OnChangeActivePlayerSignalArgs)
     on_change_state = pyqtSignal(OnChangeStateSignalArgs)
     on_change_pack = pyqtSignal(OnChangePackSignalArgs)
     on_change_round_number = pyqtSignal(OnChangeRoundNumberSignalArgs)
+    on_change_selected_question = pyqtSignal(OnChangeSelectedQuestionSignalArgs)
 
     def __init__(self):
         super().__init__()
@@ -46,6 +53,8 @@ class GameStore(QObject):
         self._state: Optional[BaseState] = None
         self._pack: Optional[Pack] = None
         self._round_number = 0
+        self._selected_question: Optional[Question] = None
+        self.answered_questions: List[Question] = []
 
     @property
     def active_player(self) -> Optional[Player]:
@@ -110,3 +119,14 @@ class GameStore(QObject):
     @property
     def round(self) -> Round:
         return self.pack.rounds[self._round_number]
+
+    @property
+    def selected_question(self) -> Question:
+        return self._selected_question
+
+    @selected_question.setter
+    def selected_question(self, value: Question):
+        self._selected_question = value
+        self.on_change_selected_question.emit(
+            OnChangeSelectedQuestionSignalArgs(sender=self, question=value)
+        )
