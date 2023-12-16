@@ -16,15 +16,21 @@ class OnEndSignalArgs(SignalArgs):
     pass
 
 
+@dataclass
+class OnChangeRunStatusSignalArgs(SignalArgs):
+    is_running: bool
+
+
 class Timer(QObject):
     TICK_TIME = 100
 
     on_tick = pyqtSignal(OnTickSignalArgs)
     on_end = pyqtSignal(OnEndSignalArgs)
+    on_change_run_status = pyqtSignal(OnChangeRunStatusSignalArgs)
 
     def __init__(self, time: float = 10):
         super().__init__()
-        self._max_time = time
+        self.max_time = time
         self._rest_of_time = time
         self._start_time = None
         self._timer = QTimer()
@@ -38,11 +44,15 @@ class Timer(QObject):
 
     def set_max_time(self, time: float):
         self._stop()
-        self._max_time = time
+        self.max_time = time
 
     def start(self):
+        if self._start_time is not None:
+            return
+
         self._start_time = datetime.now()
         self._timer.start(self.TICK_TIME)
+        self.on_change_run_status.emit(OnChangeRunStatusSignalArgs(self, True))
 
     def pause(self):
         if self._start_time is not None:
@@ -51,11 +61,15 @@ class Timer(QObject):
 
     def reset(self):
         self._stop()
-        self._rest_of_time = self._max_time
+        self._rest_of_time = self.max_time
 
     def _stop(self):
+        if self._start_time is None:
+            return
+
         self._timer.stop()
         self._start_time = None
+        self.on_change_run_status.emit(OnChangeRunStatusSignalArgs(self, False))
 
     def _tick(self):
         current_rest = self.get_rest()

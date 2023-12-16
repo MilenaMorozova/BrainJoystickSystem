@@ -45,6 +45,7 @@ def init_all_states():
     from states.lobby_state import LobbyState
     from states.animation_state import AnimationState
     from states.choice_question_state import ChoiceQuestionState
+    from states.question_state import QuestionState
     global _STATES
 
     _STATES.update({
@@ -54,4 +55,5 @@ def init_all_states():
         StatusEnum.LOBBY: LobbyState,
         StatusEnum.ANIMATION: AnimationState,
         StatusEnum.CHOICE_QUESTION: ChoiceQuestionState,
+        StatusEnum.QUESTION: QuestionState,
     })

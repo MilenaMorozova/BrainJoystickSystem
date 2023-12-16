@@ -13,4 +13,4 @@ class ChoiceQuestionState(StateWithStore):
 
     def select_question(self, question: Question):
         self._select_question_animation = SelectQuestionAnimation(question)
-        self._set_next_state_after_animation(StatusEnum.PLAYER_ANSWER, self._select_question_animation)
+        self._set_next_state_after_animation(StatusEnum.QUESTION, self._select_question_animation)

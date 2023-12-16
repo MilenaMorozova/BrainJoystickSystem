@@ -1,16 +1,19 @@
-from typing import List, Optional
+from typing import Optional
 
 from PyQt6.QtCore import QPropertyAnimation, QSize, QParallelAnimationGroup, QPoint, QSequentialAnimationGroup, \
     QPauseAnimation, Qt
+from PyQt6.QtGui import QPaintEvent
 from PyQt6.QtWidgets import QPushButton, QSizePolicy, QLabel, QVBoxLayout
 
 from helpers.pyqt_animation import SequentialAnimationGroupWithStarted
+from helpers.timer import OnChangeRunStatusSignalArgs
 from packs.question import Question
 from packs.steps.audio_step import AudioStep
 from packs.steps.image_step import ImageStep
-from packs.steps.question_step import QuestionStep
 from packs.steps.text_step import TextStep
 from packs.steps.video_step import VideoStep
+from stores.store import Store
+from widgets.base.border_mixin import BorderMixin
 from widgets.select_question_widget import SELECT_QUESTION_GRID_CELL_CSS, BIG_QUESTION_MARGIN
 
 ANSWER_TO_QUESTION_WIDGET_CSS = SELECT_QUESTION_GRID_CELL_CSS + f"""
@@ -18,11 +21,13 @@ ANSWER_TO_QUESTION_WIDGET_CSS = SELECT_QUESTION_GRID_CELL_CSS + f"""
 """
 
 
-class AnswerToQuestionWidget(QPushButton):
+class AnswerToQuestionWidget(QPushButton, BorderMixin):
     def __init__(self):
         super().__init__()
         self.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored)
         self.setStyleSheet(ANSWER_TO_QUESTION_WIDGET_CSS)
+
+        self.margin = BIG_QUESTION_MARGIN
 
         self.vbox_layout = QVBoxLayout(self)
 
@@ -37,7 +42,11 @@ class AnswerToQuestionWidget(QPushButton):
 
         self.text_label.hide()
         self.content_label.hide()
-        
+
+        self.timer = Store.get().question_timer
+
+        self.timer.on_change_run_status.connect(self.on_change_run_status_handler)
+
     def get_expand_animation(self) -> QParallelAnimationGroup:
         duration = 300
         start_size = self.size() - QSize(self.size().width(), 0)
@@ -68,7 +77,7 @@ class AnswerToQuestionWidget(QPushButton):
         animation_group.started.connect(on_start)
 
         pause_animation = QPauseAnimation(self)
-        pause_animation.setDuration(5000)
+        pause_animation.setDuration(2000)
         animation_group.addAnimation(pause_animation)
 
         return animation_group
@@ -83,7 +92,7 @@ class AnswerToQuestionWidget(QPushButton):
         animation_group.started.connect(on_start)
 
         pause_animation = QPauseAnimation(self)
-        pause_animation.setDuration(5000)
+        pause_animation.setDuration(2000)
         animation_group.addAnimation(pause_animation)
 
         return animation_group
@@ -98,7 +107,7 @@ class AnswerToQuestionWidget(QPushButton):
         animation_group.started.connect(on_start)
 
         pause_animation = QPauseAnimation(self)
-        pause_animation.setDuration(5000)
+        pause_animation.setDuration(2000)
         animation_group.addAnimation(pause_animation)
 
         return animation_group
@@ -113,7 +122,7 @@ class AnswerToQuestionWidget(QPushButton):
         animation_group.started.connect(on_start)
 
         pause_animation = QPauseAnimation(self)
-        pause_animation.setDuration(5000)
+        pause_animation.setDuration(2000)
         animation_group.addAnimation(pause_animation)
 
         return animation_group
@@ -139,3 +148,15 @@ class AnswerToQuestionWidget(QPushButton):
                 print(f"New type of steps -> {step}")
 
         return animation_group
+
+    def on_change_run_status_handler(self, args: OnChangeRunStatusSignalArgs):
+        self.set_enable_border(args.is_running)
+        if args.is_running:
+            part = self.timer.get_rest() / self.timer.max_time
+            self.start_border_animation(part, int(self.timer.get_rest() * 1000))
+        else:
+            self.stop_border_animation()
+
+    def paintEvent(self, a0: Optional[QPaintEvent]) -> None:
+        super().paintEvent(a0)
+        self.update_border()
