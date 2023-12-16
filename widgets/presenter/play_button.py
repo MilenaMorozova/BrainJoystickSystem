@@ -10,4 +10,4 @@ class PlayButton(BaseButton):
         super().__init__(parent)
 
     def click_handler(self):
-        self._store.game.state.on_click_play()
+        self._locator.game.state.on_click_play()

@@ -4,7 +4,7 @@ from PyQt6.QtGui import QColor
 
 from helpers.colors import COLORS
 from player import Player
-from stores.player_store import PlayerStore
+from services.player_store import PlayerStore
 
 
 class PlayerGenerator:

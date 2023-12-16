@@ -5,32 +5,32 @@ from animations.start_game_animation import StartGameAnimation
 from enums.joystick_button_enum import JoystickButton
 from enums.status_enum import StatusEnum
 from helpers.player_generator import PlayerGenerator
-from joystick_input import OnPlayerClickSignalArgs, OnUnknownPlayerClickSignalArgs
+from services.joystick_input import OnPlayerClickSignalArgs, OnUnknownPlayerClickSignalArgs
 from packs.parser import Parser
-from states.state_with_store import StateWithStore
+from states.state_with_service_locator import StateWithServiceLocator
 
 
-class LobbyState(StateWithStore):
+class LobbyState(StateWithServiceLocator):
     status = StatusEnum.LOBBY
 
     def __init__(self):
         super().__init__()
-        self._player_generator = PlayerGenerator(self.store.player)
+        self._player_generator = PlayerGenerator(self.locator.player)
         self._start_game_animation: Optional[StartGameAnimation] = None
 
     def on_enter(self):
-        self.store.input.on_player_click.connect(self._on_player_click_handler)
-        self.store.input.on_unknown_player_click.connect(self._on_unknown_player_click_handler)
+        self.locator.input.on_player_click.connect(self._on_player_click_handler)
+        self.locator.input.on_unknown_player_click.connect(self._on_unknown_player_click_handler)
 
     def on_exit(self):
-        self.store.input.on_player_click.disconnect(self._on_player_click_handler)
-        self.store.input.on_unknown_player_click.disconnect(self._on_unknown_player_click_handler)
+        self.locator.input.on_player_click.disconnect(self._on_player_click_handler)
+        self.locator.input.on_unknown_player_click.disconnect(self._on_unknown_player_click_handler)
 
     def load_pack_async(self, path: str):
         def func():
             parser = Parser(path)
             parser.load()
-            self.store.game.pack = parser.get_pack()
+            self.locator.game.pack = parser.get_pack()
 
         thread = Thread(target=func)
         thread.start()
@@ -38,12 +38,12 @@ class LobbyState(StateWithStore):
     def _on_player_click_handler(self, args: OnPlayerClickSignalArgs):
         match args.key:
             case JoystickButton.BACK:
-                self.store.player.remove_player(args.player)
+                self.locator.player.remove_player(args.player)
 
     def _on_unknown_player_click_handler(self, args: OnUnknownPlayerClickSignalArgs):
         match args.key:
             case JoystickButton.START:
-                self.store.player.add_player(
+                self.locator.player.add_player(
                     player=self._player_generator.get_new_player(joystick_id=args.joystick_id)
                 )
 

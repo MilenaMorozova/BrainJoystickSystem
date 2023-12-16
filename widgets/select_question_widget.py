@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import QPushButton, QGridLayout, QWidget, QSizePolicy
 
 from enums.status_enum import StatusEnum
 from packs.question import Question
-from stores.store import Store
+from services.service_locator import ServiceLocator
 
 SELECT_QUESTION_GRID_CELL_CSS = """
     font-size: 26px;
@@ -30,11 +30,11 @@ class QuestionButton(SelectQuestionGridCell):
         super().__init__(str(question.price))
         self.question = question
         self.clicked.connect(self.click_handler)
-        self.store = Store.get()
+        self.locator = ServiceLocator.get()
 
     def click_handler(self):
-        if self.store.game.state.status == StatusEnum.CHOICE_QUESTION:
-            self.store.game.state.select_question(self.question)
+        if self.locator.game.state.status == StatusEnum.CHOICE_QUESTION:
+            self.locator.game.state.select_question(self.question)
 
     def get_growing_animation(self) -> QParallelAnimationGroup:
         duration = 1000
@@ -77,7 +77,7 @@ class QuestionButton(SelectQuestionGridCell):
 class SelectQuestionWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.game_store = Store.get().game
+        self.game_store = ServiceLocator.get().game
 
         self.grid_widget = QWidget(self)
         self.grid = QGridLayout(self.grid_widget)

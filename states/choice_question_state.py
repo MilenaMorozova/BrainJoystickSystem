@@ -1,10 +1,10 @@
 from animations.select_question_animation import SelectQuestionAnimation
 from enums.status_enum import StatusEnum
 from packs.question import Question
-from states.state_with_store import StateWithStore
+from states.state_with_service_locator import StateWithServiceLocator
 
 
-class ChoiceQuestionState(StateWithStore):
+class ChoiceQuestionState(StateWithServiceLocator):
     status = StatusEnum.CHOICE_QUESTION
 
     def __init__(self):

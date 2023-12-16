@@ -5,8 +5,8 @@ from pathlib import Path
 
 from enums.status_enum import StatusEnum
 from settings import TEST_RESOURCES_PATH
-from states.state_with_store import init_all_states, _STATES
-from stores.store import Store
+from states.state_with_service_locator import init_all_states, _STATES
+from services.service_locator import ServiceLocator
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -15,9 +15,9 @@ def init_all_states_fixture():
 
 
 @pytest.fixture()
-def mocked_store() -> Store:
-    mock = Store()
-    Store._instance = mock
+def mocked_locator() -> ServiceLocator:
+    mock = ServiceLocator()
+    ServiceLocator._instance = mock
 
     return mock
 

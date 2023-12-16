@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget
 
 from enums.status_enum import StatusEnum
-from stores.store import Store
+from services.service_locator import ServiceLocator
 from widgets.presenter.play_button import PlayButton
 from widgets.presenter.select_pack_button import SelectPackButton
 
@@ -10,7 +10,7 @@ class LobbyPresenterWidget(QWidget):
     def __init__(self, parent: QWidget):
         super().__init__(parent)
 
-        self.game_store = Store.get().game
+        self.game_store = ServiceLocator.get().game
 
         self.play_button = PlayButton(self)
         self.play_button.move(20, 20)

@@ -1,9 +1,9 @@
 from enums.status_enum import StatusEnum
-from states.state_with_store import StateWithStore
+from states.state_with_service_locator import StateWithServiceLocator
 
 
-class PlayerAnswerState(StateWithStore):
+class PlayerAnswerState(StateWithServiceLocator):
     status = StatusEnum.PLAYER_ANSWER
 
     def on_enter(self):
-        self.store.question_timer.pause()
+        self.locator.question_timer.pause()

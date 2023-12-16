@@ -3,8 +3,8 @@ from PyQt6.QtWidgets import QLabel
 
 from player import OnChangeNameSignalArgs
 from helpers.timer import OnTickSignalArgs
-from stores.game_store import OnChangeActivePlayerSignalArgs
-from stores.store import Store
+from services.game_store import OnChangeActivePlayerSignalArgs
+from services.service_locator import ServiceLocator
 
 STYLE = """
     color: #FFFFFF;
@@ -20,9 +20,9 @@ class LobbyCentralWidget(QLabel):
 
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        store = Store.get()
-        self.game = store.game
-        self.question_timer = store.question_timer
+        services = ServiceLocator.get()
+        self.game = services.game
+        self.question_timer = services.question_timer
 
         self.question_timer.on_tick.connect(self._on_question_timer_tick)
 

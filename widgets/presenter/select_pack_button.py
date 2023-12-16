@@ -12,4 +12,4 @@ class SelectPackButton(BaseButton):
     def click_handler(self):
         path, _ = QFileDialog.getOpenFileName(self, caption="Выбор пакета", filter="SiGame пакеты (*.siq)")
         if path:
-            self._store.game.state.load_pack_async(path)
+            self._locator.game.state.load_pack_async(path)

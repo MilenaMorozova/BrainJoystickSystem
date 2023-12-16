@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QPushButton, QWidget
 
-from stores.store import Store
+from services.service_locator import ServiceLocator
 
 BUTTON_CSS = """
     min-width: 200px;
@@ -22,7 +22,7 @@ class BaseButton(QPushButton):
         self.setStyleSheet(BUTTON_CSS)
         self.clicked.connect(self.click_handler)
 
-        self._store = Store.get()
+        self._locator = ServiceLocator.get()
 
     def click_handler(self):
         raise NotImplementedError

@@ -3,15 +3,15 @@ from typing import Dict, Type, Optional
 from animations.animation import Animation, OnEndAnimationSignalArgs
 from enums.status_enum import StatusEnum
 from states.base_state import BaseState
-from stores.store import Store
+from services.service_locator import ServiceLocator
 
 
 _STATES: Dict[StatusEnum, Type[BaseState]] = {}
 
 
-class StateWithStore(BaseState):
+class StateWithServiceLocator(BaseState):
     def __init__(self):
-        self.store = Store.get()
+        self.locator = ServiceLocator.get()
         self.__status_after_animation: Optional[StatusEnum] = None
 
     @staticmethod
@@ -24,7 +24,7 @@ class StateWithStore(BaseState):
 
     def _set_next_state(self, status: StatusEnum):
         state_type = self._get_state_type(status)
-        self.store.game.state = state_type()
+        self.locator.game.state = state_type()
 
     def _set_next_state_after_animation(self, status: StatusEnum, animation: Animation):
         self._set_next_state(StatusEnum.ANIMATION)

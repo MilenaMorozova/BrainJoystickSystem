@@ -2,8 +2,8 @@ from typing import List
 
 from PyQt6.QtWidgets import QHBoxLayout
 
-from stores.player_store import OnAddPlayerSignalArgs, OnRemovePlayerSignalArgs
-from stores.store import Store
+from services.player_store import OnAddPlayerSignalArgs, OnRemovePlayerSignalArgs
+from services.service_locator import ServiceLocator
 from widgets.player_widget import PlayerWidget
 
 
@@ -15,7 +15,7 @@ class PlayersContainer(QHBoxLayout):
         self.setSpacing(10)
 
         self._player_widgets: List[PlayerWidget] = []
-        self._players_store = Store.get().player
+        self._players_store = ServiceLocator.get().player
         self._players_store.on_add_player.connect(self._on_add_player_handler)
         self._players_store.on_remove_player.connect(self._on_remove_player_handler)
 

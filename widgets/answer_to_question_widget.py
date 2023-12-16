@@ -12,7 +12,7 @@ from packs.steps.audio_step import AudioStep
 from packs.steps.image_step import ImageStep
 from packs.steps.text_step import TextStep
 from packs.steps.video_step import VideoStep
-from stores.store import Store
+from services.service_locator import ServiceLocator
 from widgets.base.border_mixin import BorderMixin
 from widgets.select_question_widget import SELECT_QUESTION_GRID_CELL_CSS, BIG_QUESTION_MARGIN
 
@@ -43,7 +43,7 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
         self.text_label.hide()
         self.content_label.hide()
 
-        self.timer = Store.get().question_timer
+        self.timer = ServiceLocator.get().question_timer
 
         self.timer.on_change_run_status.connect(self.on_change_run_status_handler)
 

@@ -6,9 +6,9 @@ from PyQt6.QtCore import pyqtSignal, QObject
 from enums.joystick_button_enum import JoystickButton
 from helpers.signals import SignalArgs
 
-from joystick_event_handler import JoystickDownEvent, JoystickEventHandler
+from services.joystick_event_handler import JoystickDownEvent, JoystickEventHandler
 from player import Player
-from stores.player_store import PlayerStore
+from services.player_store import PlayerStore
 
 
 @dataclass

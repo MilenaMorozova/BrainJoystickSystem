@@ -1,13 +1,10 @@
-from dataclasses import dataclass
-
-from PyQt6.QtCore import Qt, pyqtProperty, QPropertyAnimation, QSequentialAnimationGroup, pyqtSignal
+from PyQt6.QtCore import Qt, pyqtProperty, QPropertyAnimation, QSequentialAnimationGroup
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QVBoxLayout, QLabel, QFrame
 
 from enums.joystick_button_enum import JoystickButton
-from helpers.signals import SignalArgs
-from joystick_input import OnPlayerClickSignalArgs
-from stores.store import Store
+from services.joystick_input import OnPlayerClickSignalArgs
+from services.service_locator import ServiceLocator
 from widgets.score_widget import ScoreWidget
 from player import Player, OnChangeNameSignalArgs, OnChangeScoreSignalArgs
 from widgets.text_edit import TextEdit
@@ -31,7 +28,7 @@ class PlayerWidget(QFrame):
     def __init__(self, player: Player):
         super().__init__()
         self.player = player
-        self._input = Store.get().input
+        self._input = ServiceLocator.get().input
         self._input.on_player_click.connect(self._on_player_click)
         self.player.on_change_name.connect(self._on_change_player_name_handler)
         self.player.on_change_score.connect(self._on_change_score_handler)

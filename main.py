@@ -2,19 +2,19 @@ import sys
 
 from PyQt6.QtWidgets import QApplication
 
-from states.state_with_store import init_all_states
+from states.state_with_service_locator import init_all_states
 from states.lobby_state import LobbyState
-from stores.store import Store
+from services.service_locator import ServiceLocator
 from widgets.main_window import MainWindow
 from widgets.presenter.presenter_window import PresenterWindow
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    store = Store.get()
-    store.game.state = LobbyState()
+    services = ServiceLocator.get()
+    services.game.state = LobbyState()
     init_all_states()
-    store.input.start()
+    services.input.start()
 
     main_window = MainWindow()
     presenter_window = PresenterWindow()
