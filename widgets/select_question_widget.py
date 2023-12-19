@@ -26,17 +26,18 @@ class SelectQuestionGridCell(QPushButton):
 
 
 class QuestionButton(SelectQuestionGridCell):
-    def __init__(self, question: typing.Optional[Question]):
+    def __init__(self, question: Question):
+        super().__init__(str(question.price))
         self.question = question
         self.locator = ServiceLocator.get()
-
-        if question:
-            super().__init__(str(question.price))
-            self.clicked.connect(self.click_handler)
+        self.clicked.connect(self.click_handler)
 
     def click_handler(self):
-        if self.locator.game.state.status == StatusEnum.CHOICE_QUESTION:
+        if self.locator.game.state.status == StatusEnum.CHOICE_QUESTION and not self.question.is_answered:
             self.locator.game.state.select_question(self.question)
+
+    def mark_as_answered(self):
+        self.setText("")
 
     def get_growing_animation(self) -> QParallelAnimationGroup:
         duration = 1000

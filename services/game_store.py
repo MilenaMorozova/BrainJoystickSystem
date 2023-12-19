@@ -54,7 +54,6 @@ class GameStore(QObject):
         self._pack: Optional[Pack] = None
         self._round_number = 0
         self._selected_question: Optional[Question] = None
-        self.answered_questions: List[Question] = []
 
     @property
     def active_player(self) -> Optional[Player]:

@@ -15,8 +15,8 @@ class PlayerAnswerState(StateWithServiceLocator):
         self.locator.question_timer.pause()
 
     def right_answer(self):
+        self.question.is_answered = True
         self.player.score += self.question.price
-        self.locator.game.answered_questions.append(self.question)
         self.locator.game.active_player = None
         self._set_next_state(StatusEnum.CHOICE_QUESTION)
         # TODO swap to show answer animation

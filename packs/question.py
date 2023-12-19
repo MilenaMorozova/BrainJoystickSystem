@@ -9,6 +9,7 @@ class Question:
         self.steps_after = steps_after
         self.answer = answer
         self.price = price
+        self.is_answered = False
 
     def __str__(self):
         return self.answer
