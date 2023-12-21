@@ -3,5 +3,5 @@ from packs.steps.question_step import QuestionStep
 
 class ImageStep(QuestionStep):
     def get_result(self) -> bytes:
-        filename = self.content[1:]
+        filename = self.content[1:]  # delete symbol ad
         return self.loader.load_image(filename)
