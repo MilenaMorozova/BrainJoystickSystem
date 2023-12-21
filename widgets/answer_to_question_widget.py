@@ -2,7 +2,7 @@ from typing import Optional
 
 from PyQt6.QtCore import QPropertyAnimation, QSize, QParallelAnimationGroup, QPoint, QSequentialAnimationGroup, \
     QPauseAnimation, Qt
-from PyQt6.QtGui import QPaintEvent
+from PyQt6.QtGui import QPaintEvent, QPixmap
 from PyQt6.QtWidgets import QPushButton, QSizePolicy, QLabel, QVBoxLayout
 
 from helpers.pyqt_animation import SequentialAnimationGroupWithStarted
@@ -36,6 +36,7 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
 
         self.content_label = QLabel("IMAGE", self)
         self.content_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.content_label.setScaledContents(True)
 
         self.vbox_layout.addWidget(self.text_label)
         self.vbox_layout.addWidget(self.content_label, 1)
@@ -83,9 +84,11 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
         return animation_group
 
     def get_image_step_animation(self, step: ImageStep) -> SequentialAnimationGroupWithStarted:
-        # TODO: create another animation for image step
         def on_start():
-            self.content_label.setText(f'Image {step.content}')
+            image = step.get_result()
+            pixmap = QPixmap()
+            pixmap.loadFromData(image)
+            self.content_label.setPixmap(pixmap)
             self.content_label.show()
 
         animation_group = SequentialAnimationGroupWithStarted()

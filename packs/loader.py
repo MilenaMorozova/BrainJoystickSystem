@@ -12,3 +12,6 @@ class Loader:
 
     def get_content(self) -> bytes:
         return self.archive.read('content.xml')
+
+    def load_image(self, filename: str) -> bytes:
+        return self.archive.read(f'Images/{filename}')
