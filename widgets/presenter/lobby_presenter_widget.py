@@ -2,8 +2,8 @@ from PyQt6.QtWidgets import QWidget
 
 from enums.status_enum import StatusEnum
 from services.service_locator import ServiceLocator
-from widgets.presenter.play_button import PlayButton
-from widgets.presenter.select_pack_button import SelectPackButton
+from widgets.presenter.buttons.play_button import PlayButton
+from widgets.presenter.buttons.select_pack_button import SelectPackButton
 
 
 class LobbyPresenterWidget(QWidget):

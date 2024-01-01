@@ -4,7 +4,6 @@ from services.service_locator import ServiceLocator
 
 BUTTON_CSS = """
     min-width: 200px;
-    max-width: 200px;
     min-height: 80px;
     max-height: 80px;
     font-size: 26px;
