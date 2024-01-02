@@ -41,7 +41,7 @@ class Parser:
         return next(root.iter('{' + self.NAMESPACE + '}' + tag))
 
     def get_pack(self) -> Pack:
-        tags = ' '.join([i.text for i in self.iter(self.tree, 'tag')])
+        tags = ' '.join([i.text for i in self.iter(self.tree, 'tag') if i.text])
         rounds = [self._parse_round(i) for i in self.iter(self.tree, 'round')]
 
         return Pack(
