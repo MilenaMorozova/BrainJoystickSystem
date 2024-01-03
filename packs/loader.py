@@ -15,3 +15,6 @@ class Loader:
 
     def load_image(self, filename: str) -> bytes:
         return self.archive.read(f'Images/{filename}')
+
+    def load_audio(self, filename: str) -> bytes:
+        return self.archive.read(f'Audio/{filename}')

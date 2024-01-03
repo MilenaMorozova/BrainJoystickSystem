@@ -9,6 +9,11 @@ class QuestionStep:
     def get_result(self):
         raise NotImplemented()
 
+    def get_filename(self) -> str:
+        if not self.content.startswith('@'):
+            raise AttributeError("content don't starting with ad")
+        return self.content[1:]  # delete symbol ad
+
     def __str__(self):
         return self.content
 

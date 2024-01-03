@@ -5,6 +5,7 @@ from PyQt6.QtCore import QPropertyAnimation, QSize, QParallelAnimationGroup, QPo
 from PyQt6.QtGui import QPaintEvent, QPixmap
 from PyQt6.QtWidgets import QPushButton, QSizePolicy, QLabel, QVBoxLayout
 
+from helpers.audio_player import AudioPlayer
 from helpers.pyqt_animation import SequentialAnimationGroupWithStarted
 from helpers.timer import OnChangeRunStatusSignalArgs
 from packs.question import Question
@@ -116,16 +117,21 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
         return animation_group
 
     def get_audio_step_animation(self, step: AudioStep) -> SequentialAnimationGroupWithStarted:
-        # TODO: create another animation for step
         def on_start():
-            self.content_label.setText(f'Audio {step.content}')
+            pixmap = QPixmap('resources/audio_step_image.png')
+            pixmap.setMask(pixmap.createHeuristicMask())  # enable background opacity
+            self.content_label.setPixmap(pixmap)
             self.content_label.show()
+
+            audio_player.play()
+
+        audio_player = AudioPlayer(step.get_result())
 
         animation_group = SequentialAnimationGroupWithStarted()
         animation_group.started.connect(on_start)
 
         pause_animation = QPauseAnimation(self)
-        pause_animation.setDuration(2000)
+        pause_animation.setDuration(audio_player.get_duration())
         animation_group.addAnimation(pause_animation)
 
         return animation_group
