@@ -18,3 +18,6 @@ class Loader:
 
     def load_audio(self, filename: str) -> bytes:
         return self.archive.read(f'Audio/{filename}')
+
+    def load_video(self, filename: str) -> bytes:
+        return self.archive.read(f'Video/{filename}')
