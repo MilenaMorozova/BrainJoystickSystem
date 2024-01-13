@@ -41,7 +41,6 @@ class StateWithServiceLocator(BaseState):
 def init_all_states():
     from states.pause_state import PauseState
     from states.player_answer_state import PlayerAnswerState
-    from states.run_state import RunState
     from states.lobby_state import LobbyState
     from states.animation_state import AnimationState
     from states.choice_question_state import ChoiceQuestionState
@@ -51,7 +50,6 @@ def init_all_states():
     _STATES.update({
         StatusEnum.PAUSE: PauseState,
         StatusEnum.PLAYER_ANSWER: PlayerAnswerState,
-        StatusEnum.RUN: RunState,
         StatusEnum.LOBBY: LobbyState,
         StatusEnum.ANIMATION: AnimationState,
         StatusEnum.CHOICE_QUESTION: ChoiceQuestionState,
