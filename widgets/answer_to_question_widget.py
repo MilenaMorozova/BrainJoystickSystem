@@ -3,9 +3,10 @@ from typing import Optional
 from PyQt6.QtCore import QPropertyAnimation, QSize, QParallelAnimationGroup, QPoint, QSequentialAnimationGroup, \
     QPauseAnimation, Qt
 from PyQt6.QtGui import QPaintEvent, QPixmap
+from PyQt6.QtMultimediaWidgets import QVideoWidget
 from PyQt6.QtWidgets import QPushButton, QSizePolicy, QLabel, QVBoxLayout
 
-from helpers.audio_player import AudioPlayer
+from helpers.media_player import MediaPlayer
 from helpers.pyqt_animation import SequentialAnimationGroupWithStarted
 from helpers.timer import OnChangeRunStatusSignalArgs
 from packs.question import Question
@@ -35,19 +36,31 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
         self.text_label = QLabel("TEXT", self)
         self.text_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+        self.video_widget = QVideoWidget()
+
         self.content_label = QLabel("IMAGE", self)
         self.content_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.content_label.setScaledContents(True)
 
         self.vbox_layout.addWidget(self.text_label)
         self.vbox_layout.addWidget(self.content_label, 1)
+        self.vbox_layout.addWidget(self.video_widget, 1)
 
         self.text_label.hide()
         self.content_label.hide()
+        self.video_widget.hide()
 
         self.timer = ServiceLocator.get().question_timer
 
         self.timer.on_change_run_status.connect(self.on_change_run_status_handler)
+
+    def show_content_label(self):
+        self.video_widget.hide()
+        self.content_label.show()
+
+    def show_video_widget(self):
+        self.content_label.hide()
+        self.video_widget.show()
 
     def get_expand_animation(self) -> QParallelAnimationGroup:
         duration = 300
@@ -90,7 +103,7 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
             pixmap = QPixmap()
             pixmap.loadFromData(image)
             self.content_label.setPixmap(pixmap)
-            self.content_label.show()
+            self.show_content_label()
 
         animation_group = SequentialAnimationGroupWithStarted()
         animation_group.started.connect(on_start)
@@ -102,16 +115,18 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
         return animation_group
 
     def get_video_step_animation(self, step: VideoStep) -> SequentialAnimationGroupWithStarted:
-        # TODO: create another animation for step
         def on_start():
-            self.content_label.setText(f'Video {step.content}')
-            self.content_label.show()
+            self.show_video_widget()
+            media_player.play()
+
+        media_player = MediaPlayer(self.video_widget)
+        media_player.set_content(step.get_result())
 
         animation_group = SequentialAnimationGroupWithStarted()
         animation_group.started.connect(on_start)
 
         pause_animation = QPauseAnimation(self)
-        pause_animation.setDuration(2000)
+        pause_animation.setDuration(media_player.get_duration())
         animation_group.addAnimation(pause_animation)
 
         return animation_group
@@ -121,17 +136,18 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
             pixmap = QPixmap('resources/audio_step_image.png')
             pixmap.setMask(pixmap.createHeuristicMask())  # enable background opacity
             self.content_label.setPixmap(pixmap)
-            self.content_label.show()
+            self.show_content_label()
 
-            audio_player.play()
+            media_player.play()
 
-        audio_player = AudioPlayer(step.get_result())
+        media_player = MediaPlayer()
+        media_player.set_content(step.get_result())
 
         animation_group = SequentialAnimationGroupWithStarted()
         animation_group.started.connect(on_start)
 
         pause_animation = QPauseAnimation(self)
-        pause_animation.setDuration(audio_player.get_duration())
+        pause_animation.setDuration(media_player.get_duration())
         animation_group.addAnimation(pause_animation)
 
         return animation_group
