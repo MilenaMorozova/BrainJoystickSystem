@@ -16,6 +16,10 @@ class QuestionState(StateWithServiceLocator):
         self.locator.input.on_player_click.disconnect(self._on_player_click_handler)
 
     def _on_player_click_handler(self, args: OnPlayerClickSignalArgs):
-        if args.key == JoystickButton.A and self.locator.game.active_player is None:
+        if (
+                args.key == JoystickButton.A
+                and self.locator.game.active_player is None
+                and args.player not in self.locator.game.players_who_answered
+        ):
             self.locator.game.active_player = args.player
             self._set_next_state(StatusEnum.PLAYER_ANSWER)

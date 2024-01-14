@@ -14,6 +14,7 @@ class ChoiceQuestionState(StateWithServiceLocator):
     def select_question(self, question: Question):
         self.locator.game.selected_question = question
         self.locator.question_timer.reset()
+        self.locator.game.players_who_answered.clear()
 
         self._select_question_animation = SelectQuestionAnimation(question)
         self._set_next_state_after_animation(StatusEnum.QUESTION, self._select_question_animation)
