@@ -52,7 +52,7 @@ class GameStore(QObject):
         self._active_player: Optional[Player] = None
         self._state: Optional[BaseState] = None
         self._pack: Optional[Pack] = None
-        self._round_number = 0
+        self._round_number = -1
         self._selected_question: Optional[Question] = None
         self.players_who_answered: List[Player] = []
 
@@ -118,7 +118,8 @@ class GameStore(QObject):
 
     @property
     def round(self) -> Round:
-        return self.pack.rounds[self._round_number]
+        if self._round_number >= 0:
+            return self.pack.rounds[self._round_number]
 
     @property
     def selected_question(self) -> Question:

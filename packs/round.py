@@ -23,3 +23,6 @@ class Round:
                 self.name == other.name and
                 self.themes == other.themes
         )
+
+    def is_all_question_is_answered(self) -> bool:
+        return all([q.is_answered for t in self.themes for q in t.questions])

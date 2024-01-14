@@ -86,7 +86,6 @@ class SelectQuestionWidget(QWidget):
         self.grid = QGridLayout(self.grid_widget)
         self.questions_widgets: list[QuestionButton] = []
 
-        self.game_store.on_change_pack.connect(self.update_questions)
         self.game_store.on_change_round_number.connect(self.update_questions)
 
     def resizeEvent(self, a0: typing.Optional[QtGui.QResizeEvent]) -> None:
