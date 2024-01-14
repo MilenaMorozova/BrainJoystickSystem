@@ -25,5 +25,6 @@ class PlayerAnswerState(StateWithServiceLocator):
 
     def wrong_answer(self):
         self.player.score -= self.question.price
+        self.locator.game.players_who_answered.append(self.player)
         self.locator.game.active_player = None
         self._set_next_state(StatusEnum.QUESTION)
