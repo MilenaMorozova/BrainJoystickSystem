@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from PyQt6.QtCore import QPropertyAnimation, QSize, QParallelAnimationGroup, QPoint, QSequentialAnimationGroup, \
     QPauseAnimation, Qt
@@ -12,6 +12,7 @@ from helpers.timer import OnChangeRunStatusSignalArgs
 from packs.question import Question
 from packs.steps.audio_step import AudioStep
 from packs.steps.image_step import ImageStep
+from packs.steps.question_step import QuestionStep
 from packs.steps.text_step import TextStep
 from packs.steps.video_step import VideoStep
 from services.service_locator import ServiceLocator
@@ -62,6 +63,11 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
         self.content_label.hide()
         self.video_widget.show()
 
+    def hide_all(self):
+        self.content_label.hide()
+        self.video_widget.hide()
+        self.text_label.hide()
+
     def get_expand_animation(self) -> QParallelAnimationGroup:
         duration = 300
         start_size = self.size() - QSize(self.size().width(), 0)
@@ -83,9 +89,9 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
 
         return animation_group
 
-    def get_text_step_animation(self, step: TextStep) -> SequentialAnimationGroupWithStarted:
+    def get_text_animation(self, text: str) -> SequentialAnimationGroupWithStarted:
         def on_start():
-            self.text_label.setText(step.get_result())
+            self.text_label.setText(text)
             self.text_label.show()
 
         animation_group = SequentialAnimationGroupWithStarted()
@@ -96,6 +102,9 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
         animation_group.addAnimation(pause_animation)
 
         return animation_group
+
+    def get_text_step_animation(self, step: TextStep) -> SequentialAnimationGroupWithStarted:
+        return self.get_text_animation(step.get_result())
 
     def get_image_step_animation(self, step: ImageStep) -> SequentialAnimationGroupWithStarted:
         def on_start():
@@ -152,10 +161,10 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
 
         return animation_group
 
-    def get_show_question_animation(self, question: Question) -> QSequentialAnimationGroup:
+    def _get_animation_for_steps(self, steps: List[QuestionStep]) -> QSequentialAnimationGroup:
         animation_group = QSequentialAnimationGroup(self)
 
-        for i, step in enumerate(question.steps_before):
+        for i, step in enumerate(steps):
             step_animation = None
 
             if isinstance(step, TextStep):
@@ -171,6 +180,18 @@ class AnswerToQuestionWidget(QPushButton, BorderMixin):
                 animation_group.addAnimation(step_animation)
             else:
                 print(f"New type of steps -> {step}")
+
+        return animation_group
+
+    def get_show_question_animation(self, question: Question) -> QSequentialAnimationGroup:
+        return self._get_animation_for_steps(question.steps_before)
+
+    def get_show_answer_animation(self, question: Question) -> QSequentialAnimationGroup:
+        animation_group = self._get_animation_for_steps(question.steps_after)
+
+        if question.answer:
+            text_answer_animation = self.get_text_animation(question.answer)
+            animation_group.addAnimation(text_answer_animation)
 
         return animation_group
 
