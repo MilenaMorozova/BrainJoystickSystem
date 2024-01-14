@@ -22,6 +22,7 @@ class SelectQuestionAnimation(Animation):
         self.selected_question_cell.mark_as_answered()
         self.main_window.select_question_widget.hide()
         self.main_window.answer_to_question_widget.show()
+        self.main_window.answer_to_question_widget.hide_all()
 
         self.expand_animation = self.main_window.answer_to_question_widget.get_expand_animation()
         self.expand_animation.finished.connect(self.start_show_question_animation)
