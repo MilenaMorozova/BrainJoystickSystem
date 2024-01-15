@@ -121,6 +121,9 @@ class GameStore(QObject):
         if self._round_number >= 0:
             return self.pack.rounds[self._round_number]
 
+    def is_last_round(self) -> bool:
+        return self._round_number == len(self._pack.rounds) - 1
+
     @property
     def selected_question(self) -> Question:
         return self._selected_question

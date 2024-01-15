@@ -53,3 +53,7 @@ class PlayerStore(QObject):
 
     def get_count_of_players(self) -> int:
         return len(self._players)
+
+    def get_score_leader(self) -> Optional[Player]:
+        if self._players:
+            return max(self._players, key=lambda x: x.score)
