@@ -8,3 +8,4 @@ class StatusEnum(IntEnum):
     ANIMATION = 4
     CHOICE_QUESTION = 5
     QUESTION = 6
+    GAME_OVER = 7
